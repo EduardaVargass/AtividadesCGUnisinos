@@ -141,9 +141,14 @@
   <ItemGroup>
     <ClCompile Include="..\dependencies\GLAD\src\glad.c" />
     <ClCompile Include="Origem.cpp" />
+    <ClCompile Include="SceneObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\dependencies\GLAD\include\glad\glad.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FShader.fs" />
+    <None Include="VShader.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
