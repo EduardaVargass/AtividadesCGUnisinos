@@ -6,7 +6,7 @@
 class SceneObject
 {
 public:
-	SceneObject(GLuint vertexArrayObject, int numVertices, Shader* shader, glm::vec3 position = glm::vec3(0.0, 0.0, 0.0), glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0),
+	SceneObject(GLuint vertexArrayObject, int numVertices, Shader* shader, GLuint textureId, glm::vec3 position = glm::vec3(0.0, 0.0, 0.0), glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0),
 		float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0), float translationSpeed = 0.05)
 	{
 		this->vertexArrayObject = vertexArrayObject;
@@ -17,6 +17,7 @@ public:
 		this->rotationAngle = rotationAngle;
 		this->rotationAxis = rotationAxis;
 		this->translationSpeed = translationSpeed;
+		this->textureId = textureId;
 	}
 
 	void setScale(const glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0))
@@ -35,9 +36,12 @@ public:
 
 	void renderObject() const
 	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureId);
 		glBindVertexArray(vertexArrayObject);
 		glDrawArrays(GL_TRIANGLES, 0, numVertices);
 		glBindVertexArray(0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	void rotateX()
@@ -82,6 +86,6 @@ protected:
 	float rotationAngle;
 	glm::vec3 rotationAxis;
 	float translationSpeed;
-
+	GLuint textureId;
 	Shader* shader;
 };

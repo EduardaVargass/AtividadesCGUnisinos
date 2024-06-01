@@ -139,11 +139,13 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\src\stb_image.cpp" />
     <ClCompile Include="..\dependencies\GLAD\src\glad.c" />
     <ClCompile Include="Origem.cpp" />
     <ClCompile Include="SceneObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\include\stb_image.h" />
     <ClInclude Include="..\dependencies\GLAD\include\glad\glad.h" />
   </ItemGroup>
   <ItemGroup>

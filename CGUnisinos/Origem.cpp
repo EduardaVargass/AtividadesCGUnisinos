@@ -13,9 +13,9 @@ using namespace std;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../Common/include/stb_image.h"
 #include "../Common/include/Shader.h"
 #include "SceneObject.cpp"
-//#include "Mesh.h"
 
 // Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
@@ -132,13 +132,13 @@ void resetTranslationVariables() {
 	translateDirection = 0;
 }
 
-// Cria e retorna um vetor de objetos da cena, representando cubos, distribuídos horizontalmente, com base no número fornecido (numCubes)
-std::vector<SceneObject> generateCubes(int numCubes, GLuint vertexArrayObject, int numVertices, Shader* shader) {
-	std::vector<SceneObject> cubes;
+// Cria e retorna um vetor de objetos da cena, representando cubos, distribuídos horizontalmente, com base no número fornecido (numObjects)
+std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArrayObject, int numVertices, Shader* shader, GLuint textureId) {
+	std::vector<SceneObject> objects;
 
 	const float horizontalSpacing = 2.75f;
 
-	for (int i = 0; i < numCubes; ++i)
+	for (int i = 0; i < numObjects; ++i)
 	{
 		float xPosition = 0.0f;
 
@@ -147,23 +147,15 @@ std::vector<SceneObject> generateCubes(int numCubes, GLuint vertexArrayObject, i
 		else
 			xPosition = (horizontalSpacing) * ((i / 2) + 1);
 
-		cubes.push_back(SceneObject(vertexArrayObject, numVertices, shader, glm::vec3(xPosition, 0.0, 0.0)));
+		objects.push_back(SceneObject(vertexArrayObject, numVertices, shader, textureId, glm::vec3(xPosition, 0.0, 0.0)));
 	}
 
-	return cubes;
+	return objects;
 }
 
 // Função para ler o arquivo OBJ e extrair os dados de vértices e índices
-bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer) {
-	// Vetor de cores para mapeamento de cores normais
-	std::vector<glm::vec3> colors = {
-		glm::vec3(1.0f, 0.0f, 0.0f),   // Vermelho
-		glm::vec3(0.0f, 1.0f, 0.0f),   // Verde
-		glm::vec3(0.0f, 0.0f, 1.0f),   // Azul
-		glm::vec3(1.0f, 1.0f, 0.0f),   // Amarelo
-		glm::vec3(1.0f, 0.0f, 1.0f),   // Magenta
-		glm::vec3(0.0f, 1.0f, 1.0f)    // Ciano
-	};
+bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer, 
+	std::vector<glm::vec2>& textureCoordinates, string& materialFileName, string& materialName) {
 
 	// Abrindo o arquivo OBJ
 	std::ifstream inputFile(filepath);
@@ -178,10 +170,22 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 		std::string word;
 		ssline >> word;
 
-		if (word == "v") {
+		if (word == "mtllib") {
+			ssline >> materialFileName;
+		}
+		else if (word == "usemtl") { 
+			ssline >> materialName;
+		}
+		else if (word == "v") {
 			glm::vec3 v;
 			ssline >> v.x >> v.y >> v.z;
 			vertices.push_back(v);
+		}
+		else if (word == "vt")
+		{
+			glm::vec2 vt;
+			ssline >> vt.s >> vt.t;
+			textureCoordinates.push_back(vt);
 		}
 		else if (word == "f") {
 			std::string tokens[3];
@@ -191,7 +195,6 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 				int posLastValue = tokens[i].find_last_of('/');
 				std::string lastValue = tokens[i].substr(posLastValue + 1);
 				int normal = std::stoi(lastValue);
-				glm::vec3 normalColors = colors[normal - 1];
 
 				int pos = tokens[i].find("/");
 				std::string token = tokens[i].substr(0, pos);
@@ -202,9 +205,19 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 				vbuffer.push_back(vertices[index].y);
 				vbuffer.push_back(vertices[index].z);
 
-				vbuffer.push_back(normalColors.r);
-				vbuffer.push_back(normalColors.g);
-				vbuffer.push_back(normalColors.b);
+				vbuffer.push_back(vertices[index].r);
+				vbuffer.push_back(vertices[index].g);
+				vbuffer.push_back(vertices[index].b);
+
+				// Movendo para a próxima parte da string para obter o índice da textura
+				tokens[i] = tokens[i].substr(pos + 1);
+				pos = tokens[i].find("/");
+				token = tokens[i].substr(0, pos);
+				index = atoi(token.c_str()) - 1; // Convertendo o índice para inteiro e ajustando para começar de 0
+
+				// Adicionando as coordenadas da textura ao buffer de vértices
+				vbuffer.push_back(textureCoordinates[index].s);
+				vbuffer.push_back(textureCoordinates[index].t);
 			}
 		}
 	}
@@ -214,7 +227,7 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 }
 
 // Função para inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
-bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbuffer) {
+bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbuffer, int stride) {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vbuffer.size() * sizeof(GLfloat), vbuffer.data(), GL_STATIC_DRAW);
@@ -223,11 +236,14 @@ bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbu
 	glBindVertexArray(VAO);
 
 	// Especificando os atributos do vértice
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -236,25 +252,115 @@ bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbu
 }
 
 // Função principal para carregar um arquivo OBJ e inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
-int loadSimpleOBJ(const std::string& filepath, int& numVertices) {
+int loadSimpleOBJ(const std::string& filepath, int& numVertices, string& materialFileName, string& materialName) {
 	std::vector<glm::vec3> vertices;
 	std::vector<GLuint> indices;
+	vector <glm::vec2> textureCoordinates;
 	std::vector<GLfloat> vbuffer;
+	int stride = 8;
 
-	if (!readOBJFile(filepath, vertices, indices, vbuffer)) {
+	if (!readOBJFile(filepath, vertices, indices, vbuffer, textureCoordinates, materialFileName, materialName)) {
 		std::cerr << "Erro ao ler o arquivo OBJ: " << filepath << std::endl;
 		return -1;
 	}
 
-	numVertices = vbuffer.size() / 6;
+	numVertices = vbuffer.size() / stride;
 
 	GLuint VBO, VAO;
-	if (!initializeBuffers(VBO, VAO, vbuffer)) {
+	if (!initializeBuffers(VBO, VAO, vbuffer, stride)) {
 		std::cerr << "Erro ao inicializar os buffers de vértices e arrays de vértices." << std::endl;
 		return -1;
 	}
 
 	return VAO;
+}
+
+// Carrega uma textura a partir de um arquivo, configura seus parâmetros e retorna o ID da textura
+int loadTexture(string filepath)
+{
+	GLuint texID;
+
+	// Gera o identificador da textura na memória 
+	glGenTextures(1, &texID);
+	glBindTexture(GL_TEXTURE_2D, texID);
+
+	//Ajusta os parâmetros de wrapping e filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//Carregamento da imagem
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		GLenum format;
+		switch (nrChannels) {
+		case 1:
+			format = GL_RED;
+			break;
+		case 3:
+			format = GL_RGB;
+			break;
+		case 4:
+			format = GL_RGBA;
+			break;
+		default:
+			std::cerr << "Número de canais não suportado: " << nrChannels << std::endl;
+			stbi_image_free(data);
+			return 0;
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Falha ao carregar a textura" << std::endl;
+		return 0;
+	}
+
+	stbi_image_free(data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return texID;
+}
+
+// Carrega um arquivo MTL simples, extrai o nome do arquivo de textura e o armazena na variável textureFileName
+string loadSimpleMTL(const std::string& filepath, string materialName)
+{
+	string textureFileName;
+	std::ifstream inputFile(filepath);
+
+	if (!inputFile.is_open()) {
+		std::cerr << "Erro ao abrir o arquivo MTL: " << filepath << std::endl;
+		return "";
+	}
+
+	string line;
+	bool materialFound = false;
+
+	while (getline(inputFile, line))
+	{
+		istringstream ssline(line);
+		string word;
+		ssline >> word; 
+		
+		if (word == "newmtl")
+		{
+			string currentMaterialName;
+			ssline >> currentMaterialName;
+			materialFound = (currentMaterialName == materialName);
+		} else if (word == "map_Kd" && materialFound) { 
+			ssline >> textureFileName;
+			break;
+		}
+	}
+
+	inputFile.close();
+	return textureFileName;
 }
 
 int main()
@@ -272,14 +378,14 @@ int main()
 	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout << "Failed to initialize GLAD" << std::endl;
+		std::cout << "Falha ao inicializar o GLAD" << std::endl;
 	}
 
 	// Obtendo as informações de versão
 	const GLubyte* renderer = glGetString(GL_RENDERER); /* get renderer string */
 	const GLubyte* version = glGetString(GL_VERSION); /* version as a string */
-	cout << "Renderer: " << renderer << endl;
-	cout << "OpenGL version supported " << version << endl;
+	cout << "Renderizador: " << renderer << endl;
+	cout << "Versão OpenGL suportada" << version << endl;
 
 	// Definindo as dimensões da viewport com as mesmas dimensões da janela da aplicação
 	int width, height;
@@ -301,10 +407,19 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 	int numVertices;
-	GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices);
+	string materialFileName;
+	string materialName;
+	GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
+	//GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices, materialFileName, materialName);
 
-	int numCubes = 7;
-	std::vector<SceneObject> cubes = generateCubes(numCubes, VAO, numVertices, &shader);
+	// Carregamento do arquivo MTL para obter as informações do material
+	string textureFileName = loadSimpleMTL(materialFileName, materialName);
+
+	//Carregando uma textura e armazenando o identificador na memória
+	GLuint textureId = loadTexture(textureFileName);
+
+	int numObjetcts = 7;
+	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
 
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
@@ -321,25 +436,25 @@ int main()
 		glLineWidth(10);
 		glPointSize(20);
 
-		for (int i = 0; i < cubes.size(); ++i)
+		for (int i = 0; i < sceneObjects.size(); ++i)
 		{
 			if (rotateX)
-				cubes[i].rotateX();
+				sceneObjects[i].rotateX();
 			else if (rotateY)
-				cubes[i].rotateY();
+				sceneObjects[i].rotateY();
 			else if (rotateZ)
-				cubes[i].rotateZ();
+				sceneObjects[i].rotateZ();
 
 			if (translateX)
-				cubes[i].translateX(translateDirection);
+				sceneObjects[i].translateX(translateDirection);
 			else if (translateY)
-				cubes[i].translateY(translateDirection);
+				sceneObjects[i].translateY(translateDirection);
 			else if (translateZ)
-				cubes[i].translateZ(translateDirection);
+				sceneObjects[i].translateZ(translateDirection);
 
-			cubes[i].setScale(glm::vec3(scale, scale, scale));
-			cubes[i].updateModelMatrix();
-			cubes[i].renderObject();
+			sceneObjects[i].setScale(glm::vec3(scale, scale, scale));
+			sceneObjects[i].updateModelMatrix();
+			sceneObjects[i].renderObject();
 		}
 
 		// Troca os buffers da tela
