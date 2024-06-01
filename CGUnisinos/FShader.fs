@@ -6,5 +6,5 @@ out vec4 color;
 
 void main()
 {
-	color = finalColor;
+	color = texture(tex_buffer, texCoord);
 };
