@@ -157,6 +157,8 @@ std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArray
 bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer, 
 	std::vector<glm::vec2>& textureCoordinates, string& materialFileName, string& materialName) {
 
+	glm::vec3 color = glm::vec3(1.0, 0.0, 1.0);
+
 	// Abrindo o arquivo OBJ
 	std::ifstream inputFile(filepath);
 	if (!inputFile.is_open()) {
@@ -205,9 +207,9 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 				vbuffer.push_back(vertices[index].y);
 				vbuffer.push_back(vertices[index].z);
 
-				vbuffer.push_back(vertices[index].r);
-				vbuffer.push_back(vertices[index].g);
-				vbuffer.push_back(vertices[index].b);
+				vbuffer.push_back(color.r);
+				vbuffer.push_back(color.g);
+				vbuffer.push_back(color.b);
 
 				// Movendo para a próxima parte da string para obter o índice da textura
 				tokens[i] = tokens[i].substr(pos + 1);
@@ -409,8 +411,8 @@ int main()
 	int numVertices;
 	string materialFileName;
 	string materialName;
-	GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
-	//GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices, materialFileName, materialName);
+	//GLuint VAO = loadSimpleOBJ("../3D_models/Suzanne/SuzanneTriTextured.obj", numVertices, materialFileName, materialName);
+	GLuint VAO = loadSimpleOBJ("../3D_models/Cube/cube.obj", numVertices, materialFileName, materialName);
 
 	// Carregamento do arquivo MTL para obter as informações do material
 	string textureFileName = loadSimpleMTL(materialFileName, materialName);

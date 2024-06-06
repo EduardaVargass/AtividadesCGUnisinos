@@ -8,9 +8,11 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec2 tex_coord_shader;
+out vec4 finalColor;
 
 void main()
 {
 	gl_Position = projection * view * model * vec4(position, 1.0);
     tex_coord_shader = vec2(tex_coord.x, 1 - tex_coord.y);
+	finalColor = vec4(color, 1.0);
 }
