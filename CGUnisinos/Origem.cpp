@@ -154,10 +154,14 @@ std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArray
 }
 
 // Função para ler o arquivo OBJ e extrair os dados de vértices e índices
-bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer, 
-	std::vector<glm::vec2>& textureCoordinates, string& materialFileName, string& materialName) {
+bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer,
+	string& materialFileName, string& materialName) {
 
 	glm::vec3 color = glm::vec3(1.0, 0.0, 1.0);
+
+	vector <glm::vec2> textureCoordinates;
+	vector <glm::vec3> vertices;
+	vector <glm::vec3> normals;
 
 	// Abrindo o arquivo OBJ
 	std::ifstream inputFile(filepath);
@@ -188,6 +192,12 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 			glm::vec2 vt;
 			ssline >> vt.s >> vt.t;
 			textureCoordinates.push_back(vt);
+		}
+		else if (word == "vn")
+		{
+			glm::vec3 vn;
+			ssline >> vn.x >> vn.y >> vn.z;
+			normals.push_back(vn);
 		}
 		else if (word == "f") {
 			std::string tokens[3];
@@ -220,6 +230,14 @@ bool readOBJFile(const std::string& filepath, std::vector<glm::vec3>& vertices, 
 				// Adicionando as coordenadas da textura ao buffer de vértices
 				vbuffer.push_back(textureCoordinates[index].s);
 				vbuffer.push_back(textureCoordinates[index].t);
+
+				//Recuperando os indices de vns
+				tokens[i] = tokens[i].substr(pos + 1);
+				index = atoi(tokens[i].c_str()) - 1;
+
+				vbuffer.push_back(normals[index].x);
+				vbuffer.push_back(normals[index].y);
+				vbuffer.push_back(normals[index].z);
 			}
 		}
 	}
@@ -247,6 +265,9 @@ bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbu
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(2);
 
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)(8 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(3);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -255,13 +276,11 @@ bool initializeBuffers(GLuint& VBO, GLuint& VAO, const std::vector<GLfloat>& vbu
 
 // Função principal para carregar um arquivo OBJ e inicializar os buffers de vértices e arrays de vértices (VAO e VBO)
 int loadSimpleOBJ(const std::string& filepath, int& numVertices, string& materialFileName, string& materialName) {
-	std::vector<glm::vec3> vertices;
 	std::vector<GLuint> indices;
-	vector <glm::vec2> textureCoordinates;
 	std::vector<GLfloat> vbuffer;
-	int stride = 8;
+	int stride = 11;
 
-	if (!readOBJFile(filepath, vertices, indices, vbuffer, textureCoordinates, materialFileName, materialName)) {
+	if (!readOBJFile(filepath, indices, vbuffer, materialFileName, materialName)) {
 		std::cerr << "Erro ao ler o arquivo OBJ: " << filepath << std::endl;
 		return -1;
 	}
@@ -422,6 +441,19 @@ int main()
 
 	int numObjetcts = 7;
 	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
+
+	//Atualizando o shader com a posição da câmera
+	shader.setVec3("camera_pos", 0.0, 0.0, 3.0);
+	
+	//Definindo as propriedades do material da superficie
+	shader.setFloat("ka", 0.2);
+	shader.setFloat("kd", 0.5);
+	shader.setFloat("ks", 0.5);
+	shader.setFloat("q", 10.0);
+
+	//Definindo a fonte de luz pontual
+	shader.setVec3("light_pos", 0.0, 10.0, 0.0);
+	shader.setVec3("light_color", 1.0, 1.0, 0.8);
 
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
