@@ -2,11 +2,15 @@
     "objects": [
         {
             "objFilePath": "../3D_models/Suzanne/SuzanneTriTextured.obj",
-            "qtd": 5
+            "positionX": 1.0,
+            "positionY": 0.0,
+            "positionZ": 0.0
         },
         {
             "objFilePath": "../3D_models/Cube/cube.obj",
-            "qtd": 7
+            "positionX": -1.0,
+            "positionY": 0.0,
+            "positionZ": 0.0
         }
     ]
 }

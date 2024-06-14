@@ -16,7 +16,8 @@ using namespace std;
 using json = nlohmann::json;
 
 struct SceneObjTest {
-	int qtd, numVertices;
+	int numVertices;
+	float x, y, z;
 	GLuint VAO, textureId;
     string objFilePath, materialFileName, materialName, textureFileName;
 };
@@ -57,8 +58,7 @@ private:
 			GLuint textureId = loadTexture(textureFileName);
 			obj.textureId = textureId;
 
-			std::vector<SceneObject> sceneObjectsAux = generateSceneObjects(obj.qtd, obj.VAO, obj.numVertices, shader, obj.textureId, -1.0);
-			sceneObjects.insert(sceneObjects.end(), sceneObjectsAux.begin(), sceneObjectsAux.end());
+			sceneObjects.push_back(SceneObject(obj.VAO, obj.numVertices, shader, obj.textureId, glm::vec3(obj.x, obj.y, obj.z)));
 		}
     }
 
@@ -76,7 +76,9 @@ private:
             for (const auto& obj : j["objects"]) {
                 SceneObjTest sceneObject;
                 sceneObject.objFilePath = obj["objFilePath"];
-                sceneObject.qtd = obj["qtd"];
+				sceneObject.x = obj["positionX"];
+				sceneObject.y = obj["positionY"];
+				sceneObject.z = obj["positionZ"];
                 sceneObjectsProps.push_back(sceneObject);
             }
         }
