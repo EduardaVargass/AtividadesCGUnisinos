@@ -72,37 +72,41 @@ void adjustTranslation(int key)
 {
 	switch (key)
 	{
+	//case(GLFW_KEY_D):
 	case(GLFW_KEY_RIGHT):
 		translateX = true;
 		translateY = false;
 		translateZ = false;
 		translateDirection = 1;
 		break;
+	//case(GLFW_KEY_A):
 	case(GLFW_KEY_LEFT):
 		translateX = true;
 		translateY = false;
 		translateZ = false;
 		translateDirection = -1;
 		break;
+	//case(GLFW_KEY_W):
 	case(GLFW_KEY_UP):
 		translateX = false;
 		translateY = true;
 		translateZ = false;
 		translateDirection = 1;
 		break;
+	//case(GLFW_KEY_S):
 	case(GLFW_KEY_DOWN):
 		translateX = false;
 		translateY = true;
 		translateZ = false;
 		translateDirection = -1;
 		break;
-	case(GLFW_KEY_W):
+	case(GLFW_KEY_I):
 		translateX = false;
 		translateY = false;
 		translateZ = true;
 		translateDirection = 1;
 		break;
-	case(GLFW_KEY_S):
+	case(GLFW_KEY_K):
 		translateX = false;
 		translateY = false;
 		translateZ = true;
@@ -417,12 +421,33 @@ int main()
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
-	//Matriz de view
-	glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	// Câmera: Define a matriz de visão, que posiciona a câmera no espaço 3D
+	glm::mat4 view = glm::mat4(1);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
 	shader.setMat4("view", value_ptr(view));
 
-	//Matriz de projeção perspectiva - definindo o volume de visualização (frustum)
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	// Câmera: Define a posição da câmera
+	shader.setVec3("camera_pos", 0.0, 0.0, -5.0);
+
+	// Iluminação: Coeficiente de material para a luz ambiente
+	shader.setFloat("ka", 0.2);
+	// Iluminação: Coeficiente de material para a luz difusa
+	shader.setFloat("kd", 0.5);
+	// Iluminação: Coeficiente de material para a luz especular
+	shader.setFloat("ks", 0.5);
+	// Iluminação: Expoente de brilho do material
+	shader.setFloat("q", 10.0);
+	// Iluminação: Define a posição da fonte de luz
+	shader.setVec3("light_pos", 0.0, 2.0, 0.0);
+	// Iluminação: Define a cor da luz
+	shader.setVec3("light_color", 1.0, 1.0, 1.0);
+
+	// Define a matriz de projeção de perspectiva.
+	float fov = glm::radians(45.0f);
+	float aspectRatio = (float)width / (float)height;
+	float nearPlane = 0.1f;
+	float farPlane = 100.0f;
+	glm::mat4 projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
 	shader.setMat4("projection", glm::value_ptr(projection));
 
 	glEnable(GL_DEPTH_TEST);
@@ -441,19 +466,6 @@ int main()
 
 	int numObjetcts = 7;
 	std::vector<SceneObject> sceneObjects = generateSceneObjects(numObjetcts, VAO, numVertices, &shader, textureId);
-
-	//Atualizando o shader com a posição da câmera
-	shader.setVec3("camera_pos", 0.0, 0.0, 3.0);
-	
-	//Definindo as propriedades do material da superficie
-	shader.setFloat("ka", 0.2);
-	shader.setFloat("kd", 0.5);
-	shader.setFloat("ks", 0.5);
-	shader.setFloat("q", 10.0);
-
-	//Definindo a fonte de luz pontual
-	shader.setVec3("light_pos", 0.0, 10.0, 0.0);
-	shader.setVec3("light_color", 1.0, 1.0, 0.8);
 
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
@@ -490,7 +502,7 @@ int main()
 			sceneObjects[i].updateModelMatrix();
 			sceneObjects[i].renderObject();
 		}
-
+		
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
