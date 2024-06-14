@@ -16,6 +16,7 @@ using namespace std;
 #include "../Common/include/stb_image.h"
 #include "../Common/include/Shader.h"
 #include "SceneObject.cpp"
+#include "Camera.cpp"
 
 // Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
@@ -30,14 +31,7 @@ int translateDirection = 0;
 // Variável de controle de escala
 float scale = 1.0;
 
-glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 5.0);
-glm::vec3 cameraFront = glm::vec3(0.0, 0.0, -1.0);
-glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
-
-bool firstMouse = true;
-float lastX, lastY;
-float sensitivity = 0.05;
-float pitch = 0.0, yaw = -90.0;
+Camera* gCamera = nullptr;
 
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
@@ -122,29 +116,6 @@ void adjustTranslation(int key)
 	}
 }
 
-void adjustCameraPosition(int key) {
-	float cameraSpeed = 0.05;
-
-	switch (key)
-	{
-	case(GLFW_KEY_W):
-		cameraPos += cameraFront * cameraSpeed;
-		break;
-	case(GLFW_KEY_S):
-		cameraPos -= cameraFront * cameraSpeed;
-		break;
-	case(GLFW_KEY_A):
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		break;
-	case(GLFW_KEY_D):
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		break;
-	default:
-		break;
-	}
-
-}
-
 // Função callback acionada quando há interação com o teclado
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -154,37 +125,21 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	adjustScale(key);
 	adjustRotation(key);
 	adjustTranslation(key);
-	adjustCameraPosition(key);
+
+	if (gCamera)
+		gCamera->moveCamera(key);
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	//cout << xpos << " " << ypos << endl;
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
+	if (gCamera)
+		gCamera->updateCameraDirection(xpos, ypos);
+}
 
-	float offsetx = xpos - lastX;
-	float offsety = lastY - ypos;
-
-	lastX = xpos;
-	lastY = ypos;
-
-	offsetx *= sensitivity;
-	offsety *= sensitivity;
-
-	pitch += offsety;
-	yaw += offsetx;
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(front);
-
+void scrollCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (gCamera)
+		gCamera->scrollCamera(ypos);
 }
 
 // Reseta variáveis de controle de translação
@@ -458,7 +413,9 @@ int main()
 
 	// Fazendo o registro da função de callback para a janela GLFW
 	glfwSetKeyCallback(window, keyCallback);
-	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
 
 	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -481,8 +438,10 @@ int main()
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
+	Camera camera(&shader, width, height);
+	gCamera = &camera;
 
-	// Iluminação: Coeficiente de material para a luz ambiente
+		// Iluminação: Coeficiente de material para a luz ambiente
 	shader.setFloat("ka", 0.2);
 	// Iluminação: Coeficiente de material para a luz difusa
 	shader.setFloat("kd", 0.5);
@@ -494,14 +453,6 @@ int main()
 	shader.setVec3("light_pos", 0.0, 2.0, 0.0);
 	// Iluminação: Define a cor da luz
 	shader.setVec3("light_color", 1.0, 1.0, 1.0);
-
-	// Define a matriz de projeção de perspectiva.
-	float fov = glm::radians(45.0f);
-	float aspectRatio = (float)width / (float)height;
-	float nearPlane = 0.1f;
-	float farPlane = 100.0f;
-	glm::mat4 projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
-	shader.setMat4("projection", glm::value_ptr(projection));
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -535,13 +486,7 @@ int main()
 		glLineWidth(10);
 		glPointSize(20);
 
-		// Câmera: Define a matriz de visão, que posiciona a câmera no espaço 3D
-		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-		shader.setMat4("view", glm::value_ptr(view));
-
-		// Câmera: Define a posição da câmera
-		shader.setVec3("camera_pos", cameraPos.x, cameraPos.y, cameraPos.z);
+		gCamera->updateCamera();
 
 		for (int i = 0; i < sceneObjects.size(); ++i)
 		{
@@ -559,7 +504,7 @@ int main()
 			else if (translateZ)
 				sceneObjects[i].translateZ(translateDirection);
 
-			sceneObjects[i].setScale(glm::vec3(scale, scale, scale));
+			sceneObjects[i].updateScale(glm::vec3(scale, scale, scale));
 			sceneObjects[i].updateModelMatrix();
 			sceneObjects[i].renderObject();
 		}
