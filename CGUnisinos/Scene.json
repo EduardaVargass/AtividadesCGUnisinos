@@ -1,0 +1,12 @@
+{
+    "objects": [
+        {
+            "objFilePath": "../3D_models/Suzanne/SuzanneTriTextured.obj",
+            "qtd": 5
+        },
+        {
+            "objFilePath": "../3D_models/Cube/cube.obj",
+            "qtd": 7
+        }
+    ]
+}
