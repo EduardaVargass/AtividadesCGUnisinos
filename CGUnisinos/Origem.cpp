@@ -30,6 +30,15 @@ int translateDirection = 0;
 // Variável de controle de escala
 float scale = 1.0;
 
+glm::vec3 cameraPos = glm::vec3(0.0, 0.0, 5.0);
+glm::vec3 cameraFront = glm::vec3(0.0, 0.0, -1.0);
+glm::vec3 cameraUp = glm::vec3(0.0, 1.0, 0.0);
+
+bool firstMouse = true;
+float lastX, lastY;
+float sensitivity = 0.05;
+float pitch = 0.0, yaw = -90.0;
+
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
 {
@@ -72,28 +81,24 @@ void adjustTranslation(int key)
 {
 	switch (key)
 	{
-	//case(GLFW_KEY_D):
 	case(GLFW_KEY_RIGHT):
 		translateX = true;
 		translateY = false;
 		translateZ = false;
 		translateDirection = 1;
 		break;
-	//case(GLFW_KEY_A):
 	case(GLFW_KEY_LEFT):
 		translateX = true;
 		translateY = false;
 		translateZ = false;
 		translateDirection = -1;
 		break;
-	//case(GLFW_KEY_W):
 	case(GLFW_KEY_UP):
 		translateX = false;
 		translateY = true;
 		translateZ = false;
 		translateDirection = 1;
 		break;
-	//case(GLFW_KEY_S):
 	case(GLFW_KEY_DOWN):
 		translateX = false;
 		translateY = true;
@@ -117,6 +122,29 @@ void adjustTranslation(int key)
 	}
 }
 
+void adjustCameraPosition(int key) {
+	float cameraSpeed = 0.05;
+
+	switch (key)
+	{
+	case(GLFW_KEY_W):
+		cameraPos += cameraFront * cameraSpeed;
+		break;
+	case(GLFW_KEY_S):
+		cameraPos -= cameraFront * cameraSpeed;
+		break;
+	case(GLFW_KEY_A):
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		break;
+	case(GLFW_KEY_D):
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		break;
+	default:
+		break;
+	}
+
+}
+
 // Função callback acionada quando há interação com o teclado
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -126,6 +154,37 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	adjustScale(key);
 	adjustRotation(key);
 	adjustTranslation(key);
+	adjustCameraPosition(key);
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	//cout << xpos << " " << ypos << endl;
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float offsetx = xpos - lastX;
+	float offsety = lastY - ypos;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	offsetx *= sensitivity;
+	offsety *= sensitivity;
+
+	pitch += offsety;
+	yaw += offsetx;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
+
 }
 
 // Reseta variáveis de controle de translação
@@ -399,6 +458,7 @@ int main()
 
 	// Fazendo o registro da função de callback para a janela GLFW
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetCursorPosCallback(window, mouse_callback);
 
 	// GLAD: carrega todos os ponteiros d funções da OpenGL
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -421,13 +481,6 @@ int main()
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
-	// Câmera: Define a matriz de visão, que posiciona a câmera no espaço 3D
-	glm::mat4 view = glm::mat4(1);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -5.0f));
-	shader.setMat4("view", value_ptr(view));
-
-	// Câmera: Define a posição da câmera
-	shader.setVec3("camera_pos", 0.0, 0.0, -5.0);
 
 	// Iluminação: Coeficiente de material para a luz ambiente
 	shader.setFloat("ka", 0.2);
@@ -481,6 +534,14 @@ int main()
 
 		glLineWidth(10);
 		glPointSize(20);
+
+		// Câmera: Define a matriz de visão, que posiciona a câmera no espaço 3D
+		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+		shader.setMat4("view", glm::value_ptr(view));
+
+		// Câmera: Define a posição da câmera
+		shader.setVec3("camera_pos", cameraPos.x, cameraPos.y, cameraPos.z);
 
 		for (int i = 0; i < sceneObjects.size(); ++i)
 		{
