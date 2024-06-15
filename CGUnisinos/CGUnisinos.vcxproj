@@ -145,10 +145,6 @@
     <ClCompile Include="Origem.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObj.cpp" />
-    <ClCompile Include="SceneObject.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Códigos\Faculdade\Computação Gráfica\AtividadesCGUnisinos\dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Códigos\Faculdade\Computação Gráfica\AtividadesCGUnisinos\dependencies\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
     <ClCompile Include="SceneObjInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
