@@ -18,6 +18,7 @@ using namespace std;
 #include "SceneObject.cpp"
 #include "Camera.cpp"
 #include "Scene.cpp"
+#include "SceneObj.cpp"
 
 // Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
@@ -224,33 +225,33 @@ int main()
 
 		gCamera->updateCamera();
 
-		for (int i = 0; i < scene.sceneObjects.size(); ++i)
+		for (int i = 0; i < scene.sceneObject2.size(); ++i)
 		{
 			if (rotateX)
-				scene.sceneObjects[i].rotateX();
+				scene.sceneObject2[i].rotateX();
 			else if (rotateY)
-				scene.sceneObjects[i].rotateY();
+				scene.sceneObject2[i].rotateY();
 			else if (rotateZ)
-				scene.sceneObjects[i].rotateZ();
+				scene.sceneObject2[i].rotateZ();
 
 			if (translateX)
-				scene.sceneObjects[i].translateX(translateDirection);
+				scene.sceneObject2[i].translateX(translateDirection);
 			else if (translateY)
-				scene.sceneObjects[i].translateY(translateDirection);
+				scene.sceneObject2[i].translateY(translateDirection);
 			else if (translateZ)
-				scene.sceneObjects[i].translateZ(translateDirection);
+				scene.sceneObject2[i].translateZ(translateDirection);
 
-			scene.sceneObjects[i].updateScale(glm::vec3(scale, scale, scale));
-			scene.sceneObjects[i].updateModelMatrix();
-			scene.sceneObjects[i].renderObject();
+			scene.sceneObject2[i].updateScale(glm::vec3(scale, scale, scale));
+			scene.sceneObject2[i].updateModelMatrix();
+			scene.sceneObject2[i].renderObject();
 		}
 		
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}
 	// Pede pra OpenGL desalocar os buffers
-	for (int i = 0; i < scene.sceneObjectsProps.size(); ++i) {
-		glDeleteVertexArrays(1, &scene.sceneObjectsProps[i].VAO);
+	for (int i = 0; i < scene.sceneObject2.size(); ++i) {
+		glDeleteVertexArrays(1, &scene.sceneObject2[i].sceneObjInfo.VAO);
 	}
 	
 	// Finaliza a execução da GLFW, limpando os recursos alocados por ela

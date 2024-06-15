@@ -11,139 +11,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "../Common/include/stb_image.h"
-#include "SceneObject.cpp"
-#include "SceneObjInfo.cpp"
-#include "SceneObj.cpp"
 
 using namespace std;
-using json = nlohmann::json;
 
-struct SceneObjTest {
-	int numVertices;
-	float x, y, z;
-	GLuint VAO, textureId;
-    string objFilePath, materialFileName, materialName, textureFileName;
-};
-
-struct SceneObjAux {
-	float x, y, z;
-	string objFilePath;
-};
-
-class Scene
-{
+class SceneObjInfo {
 public:
-	std::vector<SceneObj> sceneObject2;
-	std::vector<SceneObjInfo> sceneObjectInfo2;
+	int numVertices;
+	GLuint VAO, textureId;
+	string objFilePath, materialFileName, materialName, textureFileName;
 
-
-
-	std::vector<SceneObjTest> sceneObjectsProps;
-	std::vector<SceneObject> sceneObjects;
-
-	Scene(string jsonFilePath, Shader* shader)
-		: jsonFilePath(jsonFilePath), shader(shader)
-    {
-		//loadObjectsFromJSON(jsonFilePath);
-		loadObjectsFromJSON2(jsonFilePath);
-    }
-
+	SceneObjInfo(string objFilePath) : objFilePath(objFilePath)
+	{
+		this->VAO = loadSimpleOBJ(objFilePath, numVertices, materialFileName, materialName);
+		this->textureFileName = loadSimpleMTL(materialFileName, materialName);
+		this->textureId = loadTexture(textureFileName);
+	}
 private:
-	Shader* shader;
-	string jsonFilePath;
-
-	void loadObjectsFromJSON2(std::string jsonFilePath) {
-		readJSON2(jsonFilePath);
-	}
-
-	void readJSON2(const std::string& jsonFilePath) {
-		std::vector<SceneObjAux> sceneObjectsAux;
-
-		std::ifstream file(jsonFilePath);
-		if (!file.is_open()) {
-			std::cerr << "Não foi possível abrir o arquivo JSON: " << jsonFilePath << std::endl;
-			return;
-		}
-
-		json j;
-		file >> j;
-
-		if (j.contains("objects")) {
-			for (const auto& obj : j["objects"]) {
-				SceneObjAux objAux;
-				objAux.objFilePath = obj["objFilePath"];
-				objAux.x = obj["positionX"];
-				objAux.y = obj["positionY"];
-				objAux.z = obj["positionZ"];
-				sceneObjectsAux.push_back(objAux);
-			}
-		}
-		else {
-			std::cerr << "Estrutura JSON inválida: 'objects' não encontrado." << std::endl;
-		}
-
-		for (const auto& obj : sceneObjectsAux)
-		{
-			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader);
-			sceneObject2.push_back(sceneObj);
-		}
-	}
-
-
-
-
-
-
-
-    void loadObjectsFromJSON(std::string jsonFilePath) {
-        readJSON(jsonFilePath);
-
-        for (auto& obj : sceneObjectsProps) {
-            std::cout << "FilePath> " << obj.objFilePath;
-
-            int numVertices;
-            string materialFileName, materialName;
-            GLuint VAO = loadSimpleOBJ(obj.objFilePath, numVertices, materialFileName, materialName);
-			obj.VAO = VAO;
-			obj.numVertices = numVertices;
-			obj.materialFileName = materialFileName;
-			obj.materialName = materialName;
-
-			string textureFileName = loadSimpleMTL(materialFileName, materialName);
-			obj.textureFileName = textureFileName;
-
-			GLuint textureId = loadTexture(textureFileName);
-			obj.textureId = textureId;
-
-			sceneObjects.push_back(SceneObject(obj.VAO, obj.numVertices, shader, obj.textureId, glm::vec3(obj.x, obj.y, obj.z)));
-		}
-    }
-
-    void readJSON(const std::string& jsonFilePath) {
-        std::ifstream file(jsonFilePath);
-        if (!file.is_open()) {
-            std::cerr << "Não foi possível abrir o arquivo JSON: " << jsonFilePath << std::endl;
-            return;
-        }
-
-        json j;
-        file >> j;
-
-        if (j.contains("objects")) {
-            for (const auto& obj : j["objects"]) {
-                SceneObjTest sceneObject;
-                sceneObject.objFilePath = obj["objFilePath"];
-				sceneObject.x = obj["positionX"];
-				sceneObject.y = obj["positionY"];
-				sceneObject.z = obj["positionZ"];
-                sceneObjectsProps.push_back(sceneObject);
-            }
-        }
-        else {
-            std::cerr << "Estrutura JSON inválida: 'objects' não encontrado." << std::endl;
-        }
-    }
-
 	// Função para ler o arquivo OBJ e extrair os dados de vértices e índices
 	bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer,
 		string& materialFileName, string& materialName) {
@@ -374,24 +257,4 @@ private:
 		return texID;
 	}
 
-	// Cria e retorna um vetor de objetos da cena, representando cubos, distribuídos horizontalmente, com base no número fornecido (numObjects)
-	std::vector<SceneObject> generateSceneObjects(int numObjects, GLuint vertexArrayObject, int numVertices, Shader* shader, GLuint textureId, float y = 0.0) {
-		std::vector<SceneObject> objects;
-
-		const float horizontalSpacing = 2.75f;
-
-		for (int i = 0; i < numObjects; ++i)
-		{
-			float xPosition = 0.0f;
-
-			if (i % 2 == 0)
-				xPosition = (-horizontalSpacing) * (i / 2);
-			else
-				xPosition = (horizontalSpacing) * ((i / 2) + 1);
-
-			objects.push_back(SceneObject(vertexArrayObject, numVertices, shader, textureId, glm::vec3(xPosition, (0.0 + y), 0.0)));
-		}
-
-		return objects;
-	}
 };
