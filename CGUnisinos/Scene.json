@@ -1,4 +1,13 @@
 {
+    "light": {
+        "q": 10.00,
+        "lightPositionX": 0.0,
+        "lightPositionY": 2.0,
+        "lightPositionZ": 0.0,
+        "lightColorR": 1.0,
+        "lightColorG": 1.0,
+        "lightColorB": 1.0
+    },
     "objects": [
         {
             "objFilePath": "../3D_models/Suzanne/SuzanneTriTextured.obj",

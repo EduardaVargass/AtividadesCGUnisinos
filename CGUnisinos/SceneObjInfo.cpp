@@ -17,8 +17,8 @@ using namespace std;
 class SceneObjInfo {
 public:
 	int numVertices;
+	float Ka, Kd, Ks;
 	GLuint VAO, textureId;
-	string objFilePath, materialFileName, materialName, textureFileName;
 
 	SceneObjInfo(string objFilePath) : objFilePath(objFilePath)
 	{
@@ -26,7 +26,10 @@ public:
 		this->textureFileName = loadSimpleMTL(materialFileName, materialName);
 		this->textureId = loadTexture(textureFileName);
 	}
+
 private:
+	string objFilePath, materialFileName, materialName, textureFileName;
+
 	// Função para ler o arquivo OBJ e extrair os dados de vértices e índices
 	bool readOBJFile(const std::string& filepath, std::vector<GLuint>& indices, std::vector<GLfloat>& vbuffer,
 		string& materialFileName, string& materialName) {
@@ -37,7 +40,6 @@ private:
 		vector <glm::vec3> vertices;
 		vector <glm::vec3> normals;
 
-		// Abrindo o arquivo OBJ
 		std::ifstream inputFile(filepath);
 		if (!inputFile.is_open()) {
 			std::cerr << "Erro ao abrir o arquivo OBJ: " << filepath << std::endl;
@@ -95,17 +97,14 @@ private:
 					vbuffer.push_back(color.g);
 					vbuffer.push_back(color.b);
 
-					// Movendo para a próxima parte da string para obter o índice da textura
 					tokens[i] = tokens[i].substr(pos + 1);
 					pos = tokens[i].find("/");
 					token = tokens[i].substr(0, pos);
-					index = atoi(token.c_str()) - 1; // Convertendo o índice para inteiro e ajustando para começar de 0
+					index = atoi(token.c_str()) - 1; 
 
-					// Adicionando as coordenadas da textura ao buffer de vértices
 					vbuffer.push_back(textureCoordinates[index].s);
 					vbuffer.push_back(textureCoordinates[index].t);
 
-					//Recuperando os indices de vns
 					tokens[i] = tokens[i].substr(pos + 1);
 					index = atoi(tokens[i].c_str()) - 1;
 
@@ -129,7 +128,6 @@ private:
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
 
-		// Especificando os atributos do vértice
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
 
@@ -170,6 +168,7 @@ private:
 		return VAO;
 	}
 
+	// Função principal para carregar um arquivo MTL
 	string loadSimpleMTL(const std::string& filepath, string materialName)
 	{
 		string textureFileName;
@@ -194,6 +193,18 @@ private:
 				string currentMaterialName;
 				ssline >> currentMaterialName;
 				materialFound = (currentMaterialName == materialName);
+			}
+			else if (word == "Ka" && materialFound) {
+				ssline >> Ka;
+				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			}
+			else if (word == "Ks" && materialFound) {
+				ssline >> Ks;
+				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			}
+			else if (word == "Kd" && materialFound) {
+				ssline >> Kd;
+				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 			else if (word == "map_Kd" && materialFound) {
 				ssline >> textureFileName;

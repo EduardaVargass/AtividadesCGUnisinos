@@ -24,21 +24,22 @@ struct SceneObjAux {
 class Scene
 {
 public:
-	std::vector<SceneObj> sceneObject;
+	vector<SceneObj> sceneObject;
+	float lightQ, lightPositionX, lightPositionY, lightPositionZ, lightColorR, lightColorG, lightColorB;
 
 	Scene(string jsonFilePath, Shader* shader)
 		: jsonFilePath(jsonFilePath), shader(shader)
     {
-		loadObjectsFromJSON(jsonFilePath);
+		loadSceneFromJSON(jsonFilePath);
+		loadObjects();
     }
 
 private:
 	Shader* shader;
 	string jsonFilePath;
+	std::vector<SceneObjAux> sceneObjectsAux;
 
-	void loadObjectsFromJSON(const std::string& jsonFilePath) {
-		std::vector<SceneObjAux> sceneObjectsAux;
-
+	void loadSceneFromJSON(const std::string& jsonFilePath) {
 		std::ifstream file(jsonFilePath);
 		if (!file.is_open()) {
 			std::cerr << "Não foi possível abrir o arquivo JSON: " << jsonFilePath << std::endl;
@@ -57,11 +58,41 @@ private:
 				objAux.z = obj["positionZ"];
 				sceneObjectsAux.push_back(objAux);
 			}
-		}
+		} 
 		else {
 			std::cerr << "Estrutura JSON inválida: 'objects' não encontrado." << std::endl;
 		}
 
+		if (j.contains("light")) {
+			const auto& light = j["light"];
+			if (light.contains("q")) {
+				lightQ = light["q"];
+			}
+			if (light.contains("lightPositionX")) {
+				lightPositionX = light["lightPositionX"];
+			}
+			if (light.contains("lightPositionY")) {
+				lightPositionY = light["lightPositionY"];
+			}
+			if (light.contains("lightPositionZ")) {
+				lightPositionZ = light["lightPositionZ"];
+			}
+			if (light.contains("lightColorR")) {
+				lightColorR = light["lightColorR"];
+			}
+			if (light.contains("lightColorG")) {
+				lightColorG = light["lightColorG"];
+			}
+			if (light.contains("lightColorB")) {
+				lightColorB = light["lightColorB"];
+			}
+		}
+		else {
+			std::cerr << "Estrutura JSON inválida: 'lights' não encontrado." << std::endl;
+		}
+	}
+
+	void loadObjects() {
 		for (const auto& obj : sceneObjectsAux)
 		{
 			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader);

@@ -190,22 +190,17 @@ int main()
 	Camera camera(&shader, width, height);
 	gCamera = &camera;
 
-		// Iluminação: Coeficiente de material para a luz ambiente
-	shader.setFloat("ka", 0.2);
-	// Iluminação: Coeficiente de material para a luz difusa
-	shader.setFloat("kd", 0.5);
-	// Iluminação: Coeficiente de material para a luz especular
-	shader.setFloat("ks", 0.5);
+	Scene scene = Scene("Scene.json", &shader);
+
 	// Iluminação: Expoente de brilho do material
-	shader.setFloat("q", 10.0);
+	shader.setFloat("q", scene.lightQ);
 	// Iluminação: Define a posição da fonte de luz
-	shader.setVec3("light_pos", 0.0, 2.0, 0.0);
+	shader.setVec3("light_pos", scene.lightPositionX, scene.lightPositionY, scene.lightPositionZ);
 	// Iluminação: Define a cor da luz
-	shader.setVec3("light_color", 1.0, 1.0, 1.0);
+	shader.setVec3("light_color", scene.lightColorR, scene.lightColorG, scene.lightColorB);
 
 	glEnable(GL_DEPTH_TEST);
 
-	Scene scene = Scene("Scene.json", &shader);
 
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
@@ -226,6 +221,13 @@ int main()
 
 		for (int i = 0; i < scene.sceneObject.size(); ++i)
 		{
+			// Iluminação: Coeficiente de material para a luz ambiente
+			shader.setFloat("ka", scene.sceneObject[i].sceneObjInfo.Ka);
+			// Iluminação: Coeficiente de material para a luz difusa
+			shader.setFloat("kd", scene.sceneObject[i].sceneObjInfo.Kd);
+			// Iluminação: Coeficiente de material para a luz especular
+			shader.setFloat("ks", scene.sceneObject[i].sceneObjInfo.Ks);
+
 			if (rotateX)
 				scene.sceneObject[i].rotateX();
 			else if (rotateY)
