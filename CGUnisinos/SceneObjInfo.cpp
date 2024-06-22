@@ -53,7 +53,7 @@ private:
 			ssline >> word;
 
 			if (word == "mtllib") {
-				ssline >> materialFileName;
+				std::getline(ssline >> std::ws, materialFileName);
 			}
 			else if (word == "usemtl") {
 				ssline >> materialName;

@@ -10,7 +10,7 @@
     },
     "objects": [
         {
-            "objFilePath": "../3D_models/cube/cube.obj",
+            "objFilePath": "../3D_Models/Cube/cube.obj",
             "positionX": 0.0,
             "positionY": 0.0,
             "positionZ": 0.0
