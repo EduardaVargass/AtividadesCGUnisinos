@@ -10,14 +10,8 @@
     },
     "objects": [
         {
-            "objFilePath": "../3D_models/Suzanne/SuzanneTriTextured.obj",
-            "positionX": 1.0,
-            "positionY": 0.0,
-            "positionZ": 0.0
-        },
-        {
-            "objFilePath": "../3D_models/Cube/cube.obj",
-            "positionX": -1.0,
+            "objFilePath": "../3D_models/cube/cube.obj",
+            "positionX": 0.0,
             "positionY": 0.0,
             "positionZ": 0.0
         }
