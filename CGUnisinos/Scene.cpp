@@ -25,7 +25,7 @@ class Scene
 {
 public:
 	vector<SceneObj> sceneObject;
-	float lightQ, lightPositionX, lightPositionY, lightPositionZ, lightColorR, lightColorG, lightColorB;
+	float lightPositionX, lightPositionY, lightPositionZ, lightColorR, lightColorG, lightColorB;
 
 	Scene(string jsonFilePath, Shader* shader)
 		: jsonFilePath(jsonFilePath), shader(shader)
@@ -65,9 +65,6 @@ private:
 
 		if (j.contains("light")) {
 			const auto& light = j["light"];
-			if (light.contains("q")) {
-				lightQ = light["q"];
-			}
 			if (light.contains("lightPositionX")) {
 				lightPositionX = light["lightPositionX"];
 			}

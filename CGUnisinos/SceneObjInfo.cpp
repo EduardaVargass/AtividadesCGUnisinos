@@ -17,7 +17,7 @@ using namespace std;
 class SceneObjInfo {
 public:
 	int numVertices;
-	float Ka, Kd, Ks;
+	float ka, kd, ks, ns;
 	GLuint VAO, textureId;
 
 	SceneObjInfo(string objFilePath) : objFilePath(objFilePath)
@@ -195,15 +195,19 @@ private:
 				materialFound = (currentMaterialName == materialName);
 			}
 			else if (word == "Ka" && materialFound) {
-				ssline >> Ka;
+				ssline >> ka;
 				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 			else if (word == "Ks" && materialFound) {
-				ssline >> Ks;
+				ssline >> ks;
 				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 			else if (word == "Kd" && materialFound) {
-				ssline >> Kd;
+				ssline >> kd;
+				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			}
+			else if (word == "Ns" && materialFound) {
+				ssline >> ns;
 				ssline.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 			else if (word == "map_Kd" && materialFound) {

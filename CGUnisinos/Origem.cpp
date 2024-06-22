@@ -192,8 +192,6 @@ int main()
 
 	Scene scene = Scene("Scene.json", &shader);
 
-	// Iluminação: Expoente de brilho do material
-	shader.setFloat("q", scene.lightQ);
 	// Iluminação: Define a posição da fonte de luz
 	shader.setVec3("light_pos", scene.lightPositionX, scene.lightPositionY, scene.lightPositionZ);
 	// Iluminação: Define a cor da luz
@@ -222,11 +220,13 @@ int main()
 		for (int i = 0; i < scene.sceneObject.size(); ++i)
 		{
 			// Iluminação: Coeficiente de material para a luz ambiente
-			shader.setFloat("ka", scene.sceneObject[i].sceneObjInfo.Ka);
+			shader.setFloat("ka", scene.sceneObject[i].sceneObjInfo.ka);
 			// Iluminação: Coeficiente de material para a luz difusa
-			shader.setFloat("kd", scene.sceneObject[i].sceneObjInfo.Kd);
+			shader.setFloat("kd", scene.sceneObject[i].sceneObjInfo.kd);
 			// Iluminação: Coeficiente de material para a luz especular
-			shader.setFloat("ks", scene.sceneObject[i].sceneObjInfo.Ks);
+			shader.setFloat("ks", scene.sceneObject[i].sceneObjInfo.ks);
+			// Iluminação: Expoente de brilho do material
+			shader.setFloat("q", scene.sceneObject[i].sceneObjInfo.ns);
 
 			if (rotateX)
 				scene.sceneObject[i].rotateX();

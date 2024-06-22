@@ -1,6 +1,5 @@
 {
     "light": {
-        "q": 10.00,
         "lightPositionX": 0.0,
         "lightPositionY": 2.0,
         "lightPositionZ": 0.0,
@@ -11,7 +10,19 @@
     "objects": [
         {
             "objFilePath": "../3D_Models/Cube/cube.obj",
+            "positionX": -2.0,
+            "positionY": 0.0,
+            "positionZ": 0.0
+        }
+        , {
+            "objFilePath": "../3D_Models/Cube/cube.obj",
             "positionX": 0.0,
+            "positionY": 0.0,
+            "positionZ": 0.0
+        }
+        , {
+            "objFilePath": "../3D_Models/Cube/cube.obj",
+            "positionX": 2.0,
             "positionY": 0.0,
             "positionZ": 0.0
         }
