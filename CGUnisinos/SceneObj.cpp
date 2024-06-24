@@ -9,18 +9,21 @@ using namespace std;
 class SceneObj {
 public:
 	SceneObjInfo sceneObjInfo;
+	int objectId;
 
-	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0), 
+	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, int objectId = -1, glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0),
 		float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0), float translationSpeed = 0.05)
-		: x(x), y(y), z(z), objFilePath(objFilePath), sceneObjInfo(objFilePath), shader(shader), scale(scale), rotationAngle(rotationAngle),
+		: x(x), y(y), z(z), objFilePath(objFilePath), sceneObjInfo(objFilePath), shader(shader), objectId(objectId), scale(scale), rotationAngle(rotationAngle),
 		rotationAxis(rotationAxis), translationSpeed(translationSpeed)
 	{
 		this->position = glm::vec3(x, y, z);
 	}
 
-	void updateScale(const glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0))
+	void updateScale(const float scaleFactor)
 	{
-		this->scale = scale;
+		this->scale.x += scaleFactor;
+		this->scale.y += scaleFactor;
+		this->scale.z += scaleFactor;
 	}
 
 	void updateModelMatrix()

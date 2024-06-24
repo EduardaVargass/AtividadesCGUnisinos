@@ -9,18 +9,21 @@
     },
     "objects": [
         {
+            "objectId": 1,
             "objFilePath": "../3D_Models/Cube/cube.obj",
             "positionX": -2.0,
             "positionY": 0.0,
             "positionZ": 0.0
         }
         , {
+            "objectId": 2,
             "objFilePath": "../3D_Models/Cube/cube.obj",
             "positionX": 0.0,
             "positionY": 0.0,
             "positionZ": 0.0
         }
         , {
+            "objectId": 3,
             "objFilePath": "../3D_Models/Cube/cube.obj",
             "positionX": 2.0,
             "positionY": 0.0,

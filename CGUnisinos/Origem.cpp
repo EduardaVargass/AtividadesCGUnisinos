@@ -30,9 +30,32 @@ bool translateX = false, translateY = false, translateZ = false;
 int translateDirection = 0;
 
 // Variável de controle de escala
-float scale = 1.0;
+float scale = 0.0;
 
 Camera* gCamera = nullptr;
+
+// ID do objeto selecionado
+int selectedObjectId = -1;
+
+// Reseta variáveis de controle de escala
+void resetScaleVariable() {
+	scale = 0.0;
+}
+
+// Reseta variáveis de controle de translação
+void resetTranslationVariables() {
+	translateX = false;
+	translateY = false;
+	translateZ = false;
+	translateDirection = 0;
+}
+
+// Reseta variáveis de controle de rotação
+void resetRotationVariables() {
+	rotateX = false;
+	rotateY = false;
+	rotateZ = false;
+}
 
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
@@ -40,9 +63,9 @@ void adjustScale(int key)
 	float scaleFactor = 0.05;
 
 	if (key == GLFW_KEY_KP_ADD)
-		scale += scale * scaleFactor;
+		scale += scaleFactor;
 	else if (key == GLFW_KEY_KP_SUBTRACT)
-		scale -= scale * scaleFactor;
+		scale -= scaleFactor;
 }
 
 // Ajusta a rotação com base na tecla pressionada.
@@ -117,6 +140,30 @@ void adjustTranslation(int key)
 	}
 }
 
+void setSelectedObject(int id) {
+	selectedObjectId = id;
+	resetTranslationVariables();
+	resetRotationVariables();
+	resetScaleVariable();
+}
+
+void selectObjectByKey(int key) {
+	switch (key) {
+	case GLFW_KEY_KP_0: case GLFW_KEY_0: setSelectedObject(0); break;
+	case GLFW_KEY_KP_1: case GLFW_KEY_1: setSelectedObject(1); break;
+	case GLFW_KEY_KP_2: case GLFW_KEY_2: setSelectedObject(2); break;
+	case GLFW_KEY_KP_3: case GLFW_KEY_3: setSelectedObject(3); break;
+	case GLFW_KEY_KP_4: case GLFW_KEY_4: setSelectedObject(4); break;
+	case GLFW_KEY_KP_5: case GLFW_KEY_5: setSelectedObject(5); break;
+	case GLFW_KEY_KP_6: case GLFW_KEY_6: setSelectedObject(6); break;
+	case GLFW_KEY_KP_7: case GLFW_KEY_7: setSelectedObject(7); break;
+	case GLFW_KEY_KP_8: case GLFW_KEY_8: setSelectedObject(8); break;
+	case GLFW_KEY_KP_9: case GLFW_KEY_9: setSelectedObject(9); break;
+	case GLFW_KEY_KP_ENTER: case GLFW_KEY_ENTER: setSelectedObject(-1); break;
+	default: break;
+	}
+}
+
 // Função callback acionada quando há interação com o teclado
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -126,6 +173,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	adjustScale(key);
 	adjustRotation(key);
 	adjustTranslation(key);
+	selectObjectByKey(key);
 
 	if (gCamera)
 		gCamera->moveCamera(key);
@@ -141,14 +189,6 @@ void scrollCallback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (gCamera)
 		gCamera->scrollCamera(ypos);
-}
-
-// Reseta variáveis de controle de translação
-void resetTranslationVariables() {
-	translateX = false;
-	translateY = false;
-	translateZ = false;
-	translateDirection = 0;
 }
 
 int main()
@@ -228,25 +268,29 @@ int main()
 			// Iluminação: Expoente de brilho do material
 			shader.setFloat("q", scene.sceneObject[i].sceneObjInfo.ns);
 
-			if (rotateX)
-				scene.sceneObject[i].rotateX();
-			else if (rotateY)
-				scene.sceneObject[i].rotateY();
-			else if (rotateZ)
-				scene.sceneObject[i].rotateZ();
+			if (selectedObjectId >= 0 && selectedObjectId == scene.sceneObject[i].objectId) {
+				if (rotateX)
+					scene.sceneObject[i].rotateX();
+				else if (rotateY)
+					scene.sceneObject[i].rotateY();
+				else if (rotateZ)
+					scene.sceneObject[i].rotateZ();
 
-			if (translateX)
-				scene.sceneObject[i].translateX(translateDirection);
-			else if (translateY)
-				scene.sceneObject[i].translateY(translateDirection);
-			else if (translateZ)
-				scene.sceneObject[i].translateZ(translateDirection);
+				if (translateX)
+					scene.sceneObject[i].translateX(translateDirection);
+				else if (translateY)
+					scene.sceneObject[i].translateY(translateDirection);
+				else if (translateZ)
+					scene.sceneObject[i].translateZ(translateDirection);
+				scene.sceneObject[i].updateScale(scale);
+			}
 
-			scene.sceneObject[i].updateScale(glm::vec3(scale, scale, scale));
 			scene.sceneObject[i].updateModelMatrix();
 			scene.sceneObject[i].renderObject();
 		}
 		
+		resetScaleVariable();
+
 		// Troca os buffers da tela
 		glfwSwapBuffers(window);
 	}

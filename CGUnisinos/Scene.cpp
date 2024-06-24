@@ -17,6 +17,7 @@ using namespace std;
 using json = nlohmann::json;
 
 struct SceneObjAux {
+	int objectId;
 	float x, y, z;
 	string objFilePath;
 };
@@ -52,6 +53,7 @@ private:
 		if (j.contains("objects")) {
 			for (const auto& obj : j["objects"]) {
 				SceneObjAux objAux;
+				objAux.objectId = obj["objectId"];
 				objAux.objFilePath = obj["objFilePath"];
 				objAux.x = obj["positionX"];
 				objAux.y = obj["positionY"];
@@ -92,7 +94,7 @@ private:
 	void loadObjects() {
 		for (const auto& obj : sceneObjectsAux)
 		{
-			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader);
+			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId);
 			sceneObject.push_back(sceneObj);
 		}
 	}
