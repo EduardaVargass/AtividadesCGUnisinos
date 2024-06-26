@@ -69,11 +69,16 @@ private:
 				objAux.z = obj["positionZ"];
 				sceneObjectsAux.push_back(objAux);
 			}
-		} 
+		}
 		else {
 			std::cerr << "Estrutura JSON inválida: 'objects' não encontrado." << std::endl;
 		}
 
+		loadLightFromJSON(j);
+		loadCameraFromJSON(j);	
+	}
+
+	void loadLightFromJSON(json j) {
 		if (j.contains("light")) {
 			const auto& light = j["light"];
 			if (light.contains("lightPositionX")) {
@@ -98,7 +103,9 @@ private:
 		else {
 			std::cerr << "Estrutura JSON inválida: 'lights' não encontrado." << std::endl;
 		}
+	}
 
+	void loadCameraFromJSON(json j) {
 		if (j.contains("camera")) {
 			const auto& cam = j["camera"];
 			SceneCameraAux cameraAux;
