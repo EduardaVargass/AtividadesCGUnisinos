@@ -1,4 +1,18 @@
 {
+    "camera": {
+        "fov": 45.0,
+        "nearPlane": 0.1,
+        "farPlane": 100.0,
+        "positionX": 0.0,
+        "positionY": 0.0,
+        "positionZ": 10.0,
+        "frontDirectionX": 0.0,
+        "frontDirectionY": 0.0,
+        "frontDirectionZ": -1.0,
+        "upDirectionX": 0.0,
+        "upDirectionY": 1.0,
+        "upDirectionZ": 0.0
+    },
     "light": {
         "lightPositionX": 0.0,
         "lightPositionY": 2.0,

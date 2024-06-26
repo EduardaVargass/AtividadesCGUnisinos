@@ -227,10 +227,8 @@ int main()
 	Shader shader("VShader.vs", "FShader.fs");
 	glUseProgram(shader.ID);
 
-	Camera camera(&shader, width, height);
-	gCamera = &camera;
-
-	Scene scene = Scene("Scene.json", &shader);
+	Scene scene = Scene("Scene.json", &shader, width, height);
+	gCamera = &scene.camera;
 
 	// Iluminação: Define a posição da fonte de luz
 	shader.setVec3("light_pos", scene.lightPositionX, scene.lightPositionY, scene.lightPositionZ);

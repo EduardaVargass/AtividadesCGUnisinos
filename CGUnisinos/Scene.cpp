@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../Common/include/stb_image.h"
 #include "SceneObj.cpp"
+#include "Camera.cpp"
 
 using namespace std;
 using json = nlohmann::json;
@@ -22,14 +23,22 @@ struct SceneObjAux {
 	string objFilePath;
 };
 
+struct SceneCameraAux {
+	float fov, nearPlane, farPlane, positionX, positionY, positionZ, 
+		frontDirectionX, frontDirectionY, frontDirectionZ, 
+		upDirectionX, upDirectionY, upDirectionZ;
+};
+
 class Scene
 {
 public:
+	Camera camera;
 	vector<SceneObj> sceneObject;
+	int width, height;
 	float lightPositionX, lightPositionY, lightPositionZ, lightColorR, lightColorG, lightColorB;
 
-	Scene(string jsonFilePath, Shader* shader)
-		: jsonFilePath(jsonFilePath), shader(shader)
+	Scene(string jsonFilePath, Shader* shader, int width, int height)
+		: jsonFilePath(jsonFilePath), shader(shader), width(width), height(height), camera(shader, width, height)
     {
 		loadSceneFromJSON(jsonFilePath);
 		loadObjects();
@@ -88,6 +97,43 @@ private:
 		}
 		else {
 			std::cerr << "Estrutura JSON inválida: 'lights' não encontrado." << std::endl;
+		}
+
+		if (j.contains("camera")) {
+			const auto& cam = j["camera"];
+			SceneCameraAux cameraAux;
+
+			if (cam.contains("fov")) {
+				cameraAux.fov = cam["fov"];
+			}
+			if (cam.contains("nearPlane")) {
+				cameraAux.nearPlane = cam["nearPlane"];
+			}
+			if (cam.contains("farPlane")) {
+				cameraAux.farPlane = cam["farPlane"];
+			}
+			if (cam.contains("positionX") && cam.contains("positionY") && cam.contains("positionZ")) {
+				cameraAux.positionX = cam["positionX"];
+				cameraAux.positionY = cam["positionY"];
+				cameraAux.positionZ = cam["positionZ"];
+				camera.setPosition(glm::vec3(cameraAux.positionX, cameraAux.positionY, cameraAux.positionZ));
+			}
+			if (cam.contains("frontDirectionX") && cam.contains("frontDirectionY") && cam.contains("frontDirectionZ")) {
+				cameraAux.frontDirectionX = cam["frontDirectionX"];
+				cameraAux.frontDirectionY = cam["frontDirectionY"];
+				cameraAux.frontDirectionZ = cam["frontDirectionZ"];
+				camera.setFrontDirection(glm::vec3(cameraAux.frontDirectionX, cameraAux.frontDirectionY, cameraAux.frontDirectionZ));
+			}
+			if (cam.contains("upDirectionX") && cam.contains("upDirectionY") && cam.contains("upDirectionZ")) {
+				cameraAux.upDirectionX = cam["upDirectionX"];
+				cameraAux.upDirectionY = cam["upDirectionY"];
+				cameraAux.upDirectionZ = cam["upDirectionZ"];
+				camera.setUpDirection(glm::vec3(cameraAux.upDirectionX, cameraAux.upDirectionY, cameraAux.upDirectionZ));
+			}
+			camera.updateCamera();
+		}
+		else {
+			std::cerr << "Estrutura JSON inválida: 'camera' não encontrado." << std::endl;
 		}
 	}
 
