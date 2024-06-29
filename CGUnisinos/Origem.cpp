@@ -38,6 +38,9 @@ Camera* gCamera = nullptr;
 // ID do objeto selecionado
 int selectedObjectId = -1;
 
+//// Controle da curva
+//bool playCurve = true;
+
 // Reseta variáveis de controle de escala
 void resetScaleVariable() {
 	scale = 0.0;
@@ -57,6 +60,10 @@ void resetRotationVariables() {
 	rotateY = false;
 	rotateZ = false;
 }
+
+//void resetPlayCurve() {
+//	playCurve = true;
+//}
 
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
@@ -94,6 +101,11 @@ void adjustRotation(int key)
 	}
 	
 }
+
+//void adjustPlayCurve(int key) {
+//	if (key == GLFW_KEY_P)
+//		playCurve = !playCurve;
+//}
 
 // Ajusta a translação com base na tecla pressionada.
 void adjustTranslation(int key)
@@ -146,6 +158,7 @@ void setSelectedObject(int id) {
 	resetTranslationVariables();
 	resetRotationVariables();
 	resetScaleVariable();
+	//resetPlayCurve();
 }
 
 void selectObjectByKey(int key) {
@@ -171,10 +184,13 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	adjustScale(key);
-	adjustRotation(key);
-	adjustTranslation(key);
-	selectObjectByKey(key);
+	if (action == GLFW_PRESS) {
+		adjustScale(key);
+		adjustRotation(key);
+		adjustTranslation(key);
+		//adjustPlayCurve(key);
+		selectObjectByKey(key);
+	}
 
 	if (gCamera)
 		gCamera->moveCamera(key);
@@ -259,10 +275,6 @@ int main()
 
 		for (int i = 0; i < scene.sceneObject.size(); ++i)
 		{
-			glm::vec3 curvePosition = scene.sceneObject[i].curveBezier.getPointOnCurve(scene.sceneObject[i].iPoint);
-
-			scene.sceneObject[i].updatePosition(curvePosition);
-
 			// Iluminação: Coeficiente de material para a luz ambiente
 			shader.setFloat("ka", scene.sceneObject[i].sceneObjInfo.ka);
 			// Iluminação: Coeficiente de material para a luz difusa
@@ -273,6 +285,8 @@ int main()
 			shader.setFloat("q", scene.sceneObject[i].sceneObjInfo.ns);
 
 			if (selectedObjectId >= 0 && selectedObjectId == scene.sceneObject[i].objectId) {
+				//scene.sceneObject[i].playCurve = playCurve;
+
 				if (rotateX)
 					scene.sceneObject[i].rotateX();
 				else if (rotateY)
@@ -280,20 +294,26 @@ int main()
 				else if (rotateZ)
 					scene.sceneObject[i].rotateZ();
 
-				if (translateX)
-					scene.sceneObject[i].translateX(translateDirection);
-				else if (translateY)
-					scene.sceneObject[i].translateY(translateDirection);
-				else if (translateZ)
-					scene.sceneObject[i].translateZ(translateDirection);
+				if (!scene.sceneObject[i].playCurve) {
+					if (translateX)
+						scene.sceneObject[i].translateX(translateDirection);
+					else if (translateY)
+						scene.sceneObject[i].translateY(translateDirection);
+					else if (translateZ)
+						scene.sceneObject[i].translateZ(translateDirection);
+				}
+
 				scene.sceneObject[i].updateScale(scale);
+			}
+
+			if (scene.sceneObject[i].playCurve && scene.sceneObject[i].nbCurve > 0) {
+				glm::vec3 curvePosition = scene.sceneObject[i].curveBezier.getPointOnCurve(scene.sceneObject[i].iPoint);
+				scene.sceneObject[i].updatePosition(curvePosition);
+				scene.sceneObject[i].iPoint = (scene.sceneObject[i].iPoint + 1) % scene.sceneObject[i].nbCurve;
 			}
 
 			scene.sceneObject[i].updateModelMatrix();
 			scene.sceneObject[i].renderObject();
-
-			if(scene.sceneObject[i].nbCurve > 0)
-				scene.sceneObject[i].iPoint = (scene.sceneObject[i].iPoint + 1) % scene.sceneObject[i].nbCurve;
 		}
 		
 		resetScaleVariable();

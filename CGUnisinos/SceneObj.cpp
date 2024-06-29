@@ -13,6 +13,7 @@ public:
 	SceneObjInfo sceneObjInfo;
 	Bezier curveBezier = Bezier();
 	int objectId, nbCurve, iPoint;
+	bool playCurve = true;
 
 	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, int objectId = -1, vector <glm::vec3> curvePoints = {},
 		glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0), float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0),
