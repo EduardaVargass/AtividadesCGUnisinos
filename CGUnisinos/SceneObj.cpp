@@ -35,6 +35,11 @@ public:
 		shader->setMat4("model", glm::value_ptr(model));
 	}
 
+	void updatePosition(glm::vec3 newPosition)
+	{
+		this->position = newPosition;
+	}
+
 	void renderObject() const
 	{
 		glActiveTexture(GL_TEXTURE0);

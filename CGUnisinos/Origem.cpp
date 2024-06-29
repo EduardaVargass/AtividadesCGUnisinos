@@ -18,6 +18,7 @@ using namespace std;
 #include "Camera.cpp"
 #include "Scene.cpp"
 #include "SceneObj.cpp"
+#include "Bezier.cpp"
 
 // Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
@@ -181,8 +182,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (gCamera)
-		gCamera->updateCameraDirection(xpos, ypos);
+	/*if (gCamera)
+		gCamera->updateCameraDirection(xpos, ypos);*/
 }
 
 void scrollCallback(GLFWwindow* window, double xpos, double ypos)
@@ -235,12 +236,43 @@ int main()
 	// Iluminação: Define a cor da luz
 	shader.setVec3("light_color", scene.lightColorR, scene.lightColorG, scene.lightColorB);
 
+
+	Bezier curveBezier = Bezier();
+	vector <glm::vec3> points = {
+		glm::vec3(2.0f, 0.0f, 0.0f),
+		glm::vec3(1.732f, 1.0f, 0.0f),
+		glm::vec3(1.0f, 1.732f, 0.0f),
+		glm::vec3(0.0f, 2.0f, 0.0f),
+		glm::vec3(-1.0f, 1.732f, 0.0f),
+		glm::vec3(-1.732f, 1.0f, 0.0f),
+		glm::vec3(-2.0f, 0.0f, 0.0f),
+		glm::vec3(-1.732f, -1.0f, 0.0f),
+		glm::vec3(-1.0f, -1.732f, 0.0f),
+		glm::vec3(0.0f, -2.0f, 0.0f),
+		glm::vec3(1.0f, -1.732f, 0.0f),
+		glm::vec3(1.732f, -1.0f, 0.0f),
+		glm::vec3(2.0f, 0.0f, 0.0f)
+	};
+
+	curveBezier.setShader(&shader);
+	curveBezier.setControlPoints(points);
+	curveBezier.generateCurve(400);
+
+	int nbCurve = curveBezier.getNbCurvePoints();
+	std::cout << nbCurve << std::endl;
+
+	curveBezier.drawCurve(glm::vec4(0.5f, 0.5f, 0.5f, 0.5f));
+
 	glEnable(GL_DEPTH_TEST);
 
+	int iPoint = 0;
 
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
 	{
+		
+		glm::vec3 curvePosition = curveBezier.getPointOnCurve(iPoint);
+
 		resetTranslationVariables();
 
 		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
@@ -257,6 +289,8 @@ int main()
 
 		for (int i = 0; i < scene.sceneObject.size(); ++i)
 		{
+			scene.sceneObject[i].updatePosition(curvePosition);
+
 			// Iluminação: Coeficiente de material para a luz ambiente
 			shader.setFloat("ka", scene.sceneObject[i].sceneObjInfo.ka);
 			// Iluminação: Coeficiente de material para a luz difusa
@@ -287,6 +321,8 @@ int main()
 			scene.sceneObject[i].renderObject();
 		}
 		
+		iPoint = (iPoint + 1) % nbCurve;
+
 		resetScaleVariable();
 
 		// Troca os buffers da tela

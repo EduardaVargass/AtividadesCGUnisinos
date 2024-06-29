@@ -141,7 +141,9 @@
   <ItemGroup>
     <ClCompile Include="..\Common\src\stb_image.cpp" />
     <ClCompile Include="..\dependencies\GLAD\src\glad.c" />
+    <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Curve.cpp" />
     <ClCompile Include="Origem.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObj.cpp" />
