@@ -3,20 +3,34 @@
 #include "SceneObjInfo.cpp"
 #include <GLFW/glfw3.h>
 #include "../Common/include/Shader.h"
+#include "Bezier.cpp"
 
 using namespace std; 
 
 class SceneObj {
 public:
+	vector <glm::vec3> curvePoints;
 	SceneObjInfo sceneObjInfo;
-	int objectId;
+	Bezier curveBezier = Bezier();
+	int objectId, nbCurve, iPoint;
 
-	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, int objectId = -1, glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0),
-		float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0), float translationSpeed = 0.05)
+	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, int objectId = -1, vector <glm::vec3> curvePoints = {},
+		glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0), float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0),
+		float translationSpeed = 0.05)
 		: x(x), y(y), z(z), objFilePath(objFilePath), sceneObjInfo(objFilePath), shader(shader), objectId(objectId), scale(scale), rotationAngle(rotationAngle),
-		rotationAxis(rotationAxis), translationSpeed(translationSpeed)
+		rotationAxis(rotationAxis), translationSpeed(translationSpeed), curvePoints(curvePoints)
 	{
 		this->position = glm::vec3(x, y, z);
+
+		if (!curvePoints.empty())
+			setBezierCurve();
+	}
+
+	void setBezierCurve() {
+		curveBezier.setShader(shader);
+		curveBezier.setControlPoints(curvePoints);
+		curveBezier.generateCurve(400);
+		nbCurve = curveBezier.getNbCurvePoints();
 	}
 
 	void updateScale(const float scaleFactor)

@@ -21,6 +21,7 @@ struct SceneObjAux {
 	int objectId;
 	float x, y, z;
 	string objFilePath;
+	vector <glm::vec3> curvePoints;
 };
 
 struct SceneCameraAux {
@@ -67,6 +68,15 @@ private:
 				objAux.x = obj["positionX"];
 				objAux.y = obj["positionY"];
 				objAux.z = obj["positionZ"];
+				if (obj.contains("curvePoints")) {
+					for (const auto& point : obj["curvePoints"]) {
+						float x = std::stof(point[0].get<std::string>());
+						float y = std::stof(point[1].get<std::string>());
+						float z = std::stof(point[2].get<std::string>());
+						objAux.curvePoints.push_back(glm::vec3(x, y, z));
+					}
+				}
+
 				sceneObjectsAux.push_back(objAux);
 			}
 		}
@@ -147,7 +157,7 @@ private:
 	void loadObjects() {
 		for (const auto& obj : sceneObjectsAux)
 		{
-			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId);
+			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId, obj.curvePoints);
 			sceneObject.push_back(sceneObj);
 		}
 	}

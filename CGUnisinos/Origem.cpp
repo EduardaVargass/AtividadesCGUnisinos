@@ -237,42 +237,12 @@ int main()
 	shader.setVec3("light_color", scene.lightColorR, scene.lightColorG, scene.lightColorB);
 
 
-	Bezier curveBezier = Bezier();
-	vector <glm::vec3> points = {
-		glm::vec3(2.0f, 0.0f, 0.0f),
-		glm::vec3(1.732f, 1.0f, 0.0f),
-		glm::vec3(1.0f, 1.732f, 0.0f),
-		glm::vec3(0.0f, 2.0f, 0.0f),
-		glm::vec3(-1.0f, 1.732f, 0.0f),
-		glm::vec3(-1.732f, 1.0f, 0.0f),
-		glm::vec3(-2.0f, 0.0f, 0.0f),
-		glm::vec3(-1.732f, -1.0f, 0.0f),
-		glm::vec3(-1.0f, -1.732f, 0.0f),
-		glm::vec3(0.0f, -2.0f, 0.0f),
-		glm::vec3(1.0f, -1.732f, 0.0f),
-		glm::vec3(1.732f, -1.0f, 0.0f),
-		glm::vec3(2.0f, 0.0f, 0.0f)
-	};
-
-	curveBezier.setShader(&shader);
-	curveBezier.setControlPoints(points);
-	curveBezier.generateCurve(400);
-
-	int nbCurve = curveBezier.getNbCurvePoints();
-	std::cout << nbCurve << std::endl;
-
-	curveBezier.drawCurve(glm::vec4(0.5f, 0.5f, 0.5f, 0.5f));
-
 	glEnable(GL_DEPTH_TEST);
 
-	int iPoint = 0;
 
 	// Loop da aplicação
 	while (!glfwWindowShouldClose(window))
 	{
-		
-		glm::vec3 curvePosition = curveBezier.getPointOnCurve(iPoint);
-
 		resetTranslationVariables();
 
 		// Checa se houveram eventos de input (key pressed, mouse moved etc.) e chama as funções de callback correspondentes
@@ -289,6 +259,8 @@ int main()
 
 		for (int i = 0; i < scene.sceneObject.size(); ++i)
 		{
+			glm::vec3 curvePosition = scene.sceneObject[i].curveBezier.getPointOnCurve(scene.sceneObject[i].iPoint);
+
 			scene.sceneObject[i].updatePosition(curvePosition);
 
 			// Iluminação: Coeficiente de material para a luz ambiente
@@ -319,10 +291,11 @@ int main()
 
 			scene.sceneObject[i].updateModelMatrix();
 			scene.sceneObject[i].renderObject();
+
+			if(scene.sceneObject[i].nbCurve > 0)
+				scene.sceneObject[i].iPoint = (scene.sceneObject[i].iPoint + 1) % scene.sceneObject[i].nbCurve;
 		}
 		
-		iPoint = (iPoint + 1) % nbCurve;
-
 		resetScaleVariable();
 
 		// Troca os buffers da tela
