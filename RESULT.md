@@ -54,3 +54,9 @@
 - Eixo z: setas W e S
 
 ![Video M5](Tarefas/M5Eduarda.mp4)
+
+### Tarefa M6:
+#### Curvas
+- Pontos da curva definidos no JSON, por objeto
+![Image](Tarefas/M6Eduarda.png)
+![Video M6](Tarefas/M6Eduarda.mp4)
