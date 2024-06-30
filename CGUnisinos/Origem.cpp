@@ -33,13 +33,9 @@ int translateDirection = 0;
 // Variável de controle de escala
 float scale = 0.0;
 
-Camera* gCamera = nullptr;
-
 // ID do objeto selecionado
-int selectedObjectId = -1;
-
-//// Controle da curva
-//bool playCurve = true;
+SceneObj* selectedObject = nullptr;
+Scene* gScene = nullptr;
 
 // Reseta variáveis de controle de escala
 void resetScaleVariable() {
@@ -60,10 +56,6 @@ void resetRotationVariables() {
 	rotateY = false;
 	rotateZ = false;
 }
-
-//void resetPlayCurve() {
-//	playCurve = true;
-//}
 
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
@@ -102,10 +94,10 @@ void adjustRotation(int key)
 	
 }
 
-//void adjustPlayCurve(int key) {
-//	if (key == GLFW_KEY_P)
-//		playCurve = !playCurve;
-//}
+void adjustPlayCurve(int key) {
+	if (key == GLFW_KEY_P && selectedObject != nullptr)
+		selectedObject->playCurve = !selectedObject->playCurve;
+}
 
 // Ajusta a translação com base na tecla pressionada.
 void adjustTranslation(int key)
@@ -154,11 +146,18 @@ void adjustTranslation(int key)
 }
 
 void setSelectedObject(int id) {
-	selectedObjectId = id;
+	if (id < 0)
+		selectedObject = nullptr;
+	else {
+		for (int i = 0; i < gScene->sceneObject.size(); ++i)
+			if (gScene->sceneObject[i].objectId == id) {
+				selectedObject = &gScene->sceneObject[i];
+				break;
+			}
+	}
 	resetTranslationVariables();
 	resetRotationVariables();
 	resetScaleVariable();
-	//resetPlayCurve();
 }
 
 void selectObjectByKey(int key) {
@@ -188,24 +187,24 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 		adjustScale(key);
 		adjustRotation(key);
 		adjustTranslation(key);
-		//adjustPlayCurve(key);
+		adjustPlayCurve(key);
 		selectObjectByKey(key);
 	}
 
-	if (gCamera)
-		gCamera->moveCamera(key);
+	if (gScene != nullptr)
+		gScene->camera.moveCamera(key);
 }
 
 void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	/*if (gCamera)
-		gCamera->updateCameraDirection(xpos, ypos);*/
+	if (gScene != nullptr)
+		gScene->camera.updateCameraDirection(xpos, ypos);
 }
 
 void scrollCallback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (gCamera)
-		gCamera->scrollCamera(ypos);
+	if (gScene != nullptr)
+		gScene->camera.scrollCamera(ypos);
 }
 
 int main()
@@ -245,7 +244,7 @@ int main()
 	glUseProgram(shader.ID);
 
 	Scene scene = Scene("Scene.json", &shader, width, height);
-	gCamera = &scene.camera;
+	gScene = &scene;
 
 	// Iluminação: Define a posição da fonte de luz
 	shader.setVec3("light_pos", scene.lightPositionX, scene.lightPositionY, scene.lightPositionZ);
@@ -271,7 +270,8 @@ int main()
 		glLineWidth(10);
 		glPointSize(20);
 
-		gCamera->updateCamera();
+		if(gScene != nullptr)
+			gScene->camera.updateCamera();
 
 		for (int i = 0; i < scene.sceneObject.size(); ++i)
 		{
@@ -284,9 +284,7 @@ int main()
 			// Iluminação: Expoente de brilho do material
 			shader.setFloat("q", scene.sceneObject[i].sceneObjInfo.ns);
 
-			if (selectedObjectId >= 0 && selectedObjectId == scene.sceneObject[i].objectId) {
-				//scene.sceneObject[i].playCurve = playCurve;
-
+			if (selectedObject != nullptr && selectedObject->objectId >= 0 && selectedObject->objectId == scene.sceneObject[i].objectId) {
 				if (rotateX)
 					scene.sceneObject[i].rotateX();
 				else if (rotateY)
