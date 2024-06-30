@@ -13,13 +13,13 @@ public:
 	SceneObjInfo sceneObjInfo;
 	Bezier curveBezier = Bezier();
 	int objectId, nbCurve, iPoint;
-	bool playCurve = true;
+	bool playCurve;
 
-	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, int objectId = -1, vector <glm::vec3> curvePoints = {},
+	SceneObj(float x, float y, float z, string objFilePath, Shader* shader, int objectId = -1, vector <glm::vec3> curvePoints = {}, bool curveEnable = true,
 		glm::vec3 scale = glm::vec3(1.0, 1.0, 1.0), float rotationAngle = 0.0, glm::vec3 rotationAxis = glm::vec3(0.0, 0.0, 1.0),
 		float translationSpeed = 0.05)
-		: x(x), y(y), z(z), objFilePath(objFilePath), sceneObjInfo(objFilePath), shader(shader), objectId(objectId), scale(scale), rotationAngle(rotationAngle),
-		rotationAxis(rotationAxis), translationSpeed(translationSpeed), curvePoints(curvePoints)
+		: x(x), y(y), z(z), objFilePath(objFilePath), sceneObjInfo(objFilePath), shader(shader), objectId(objectId), curvePoints(curvePoints), playCurve(curveEnable),
+		scale(scale), rotationAngle(rotationAngle), rotationAxis(rotationAxis), translationSpeed(translationSpeed)
 	{
 		this->position = glm::vec3(x, y, z);
 
