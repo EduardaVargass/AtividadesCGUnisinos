@@ -186,10 +186,11 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 	if (action == GLFW_PRESS) {
 		adjustScale(key);
 		adjustRotation(key);
-		adjustTranslation(key);
 		adjustPlayCurve(key);
 		selectObjectByKey(key);
 	}
+
+	adjustTranslation(key);
 
 	if (gScene != nullptr)
 		gScene->camera.moveCamera(key);
@@ -292,7 +293,7 @@ int main()
 				else if (rotateZ)
 					scene.sceneObject[i].rotateZ();
 
-				if (!scene.sceneObject[i].playCurve) {
+				if (!scene.sceneObject[i].playCurve || scene.sceneObject[i].nbCurve <= 0) {
 					if (translateX)
 						scene.sceneObject[i].translateX(translateDirection);
 					else if (translateY)
