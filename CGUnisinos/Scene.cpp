@@ -19,9 +19,9 @@ using json = nlohmann::json;
 
 struct SceneObjAux {
 	int objectId;
-	float x, y, z, scale;
+	float x, y, z, scale, rotateSpeed = 10.0;
 	bool curveEnable = false;
-	string objFilePath;
+	string objFilePath, rotate;
 	vector <glm::vec3> curvePoints;
 };
 
@@ -81,7 +81,10 @@ private:
 						objAux.curveEnable = obj["curveEnable"];
 				if (obj.contains("scale"))
 					objAux.scale = obj["scale"];
-
+				if (obj.contains("rotate"))
+					objAux.rotate = obj["rotate"];
+				if (obj.contains("rotateSpeed"))
+					objAux.rotateSpeed = obj["rotateSpeed"];
 				sceneObjectsAux.push_back(objAux);
 			}
 		}
@@ -163,7 +166,8 @@ private:
 		for (const auto& obj : sceneObjectsAux)
 		{
 			float scaleObj = obj.scale > 0 ? obj.scale : 1.0;
-			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId, obj.curvePoints, obj.curveEnable, glm::vec3(scaleObj, scaleObj, scaleObj));
+			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId, obj.curvePoints, obj.curveEnable,
+				glm::vec3(scaleObj, scaleObj, scaleObj), obj.rotate, obj.rotateSpeed);
 			sceneObject.push_back(sceneObj);
 		}
 	}

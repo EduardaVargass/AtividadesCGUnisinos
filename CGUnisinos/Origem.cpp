@@ -23,9 +23,6 @@ using namespace std;
 // Dimensões da janela
 const GLuint WIDTH = 1000, HEIGHT = 1000;
 
-// Variáveis de controle de rotação
-bool rotateX = false, rotateY = false, rotateZ = false;
-
 // Variáveis de controle de translação
 bool translateX = false, translateY = false, translateZ = false;
 int translateDirection = 0;
@@ -50,13 +47,6 @@ void resetTranslationVariables() {
 	translateDirection = 0;
 }
 
-// Reseta variáveis de controle de rotação
-void resetRotationVariables() {
-	rotateX = false;
-	rotateY = false;
-	rotateZ = false;
-}
-
 // Ajusta a escala com base na tecla pressionada.
 void adjustScale(int key)
 {
@@ -71,27 +61,22 @@ void adjustScale(int key)
 // Ajusta a rotação com base na tecla pressionada.
 void adjustRotation(int key)
 {
-	switch (key)
-	{
-	case(GLFW_KEY_X):
-		rotateX = true;
-		rotateY = false;
-		rotateZ = false;
-		break;
-	case(GLFW_KEY_Y):
-		rotateX = false;
-		rotateY = true;
-		rotateZ = false;
-		break;
-	case(GLFW_KEY_Z):
-		rotateX = false;
-		rotateY = false;
-		rotateZ = true;
-		break;
-	default:
-		break;
+	if (selectedObject != nullptr) {
+		switch (key)
+		{
+		case(GLFW_KEY_X):
+			selectedObject->rotate = "x";
+			break;
+		case(GLFW_KEY_Y):
+			selectedObject->rotate = "y";
+			break;
+		case(GLFW_KEY_Z):
+			selectedObject->rotate = "z";
+			break;
+		default:
+			break;
+		}
 	}
-	
 }
 
 void adjustPlayCurve(int key) {
@@ -146,6 +131,9 @@ void adjustTranslation(int key)
 }
 
 void setSelectedObject(int id) {
+	if(selectedObject != nullptr)
+		selectedObject->rotate = "";
+
 	if (id < 0)
 		selectedObject = nullptr;
 	else {
@@ -156,7 +144,6 @@ void setSelectedObject(int id) {
 			}
 	}
 	resetTranslationVariables();
-	resetRotationVariables();
 	resetScaleVariable();
 }
 
@@ -285,13 +272,14 @@ int main()
 			// Iluminação: Expoente de brilho do material
 			shader.setFloat("q", scene.sceneObject[i].sceneObjInfo.ns);
 
+			if (scene.sceneObject[i].rotate == "x")
+				scene.sceneObject[i].rotateX();
+			else if (scene.sceneObject[i].rotate == "y")
+				scene.sceneObject[i].rotateY();
+			else if (scene.sceneObject[i].rotate == "z")
+				scene.sceneObject[i].rotateZ();
+
 			if (selectedObject != nullptr && selectedObject->objectId >= 0 && selectedObject->objectId == scene.sceneObject[i].objectId) {
-				if (rotateX)
-					scene.sceneObject[i].rotateX();
-				else if (rotateY)
-					scene.sceneObject[i].rotateY();
-				else if (rotateZ)
-					scene.sceneObject[i].rotateZ();
 
 				if (!scene.sceneObject[i].playCurve || scene.sceneObject[i].nbCurve <= 0) {
 					if (translateX)

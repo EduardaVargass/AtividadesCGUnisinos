@@ -50,7 +50,9 @@
             "positionX": 0.0,
             "positionY": 0,
             "positionZ": 0.0,
-            "scale": 0.03
+            "scale": 0.03,
+            "rotate": "x",
+            "rotateSpeed": 100
         }
     ]
 }
