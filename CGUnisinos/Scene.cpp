@@ -18,7 +18,7 @@ using namespace std;
 using json = nlohmann::json;
 
 struct SceneObjAux {
-	int objectId;
+	int transfObjectId = -1;
 	float x, y, z, scale, rotateSpeed = 10.0;
 	bool curveEnable = false;
 	string objFilePath, rotate;
@@ -64,7 +64,6 @@ private:
 		if (j.contains("objects")) {
 			for (const auto& obj : j["objects"]) {
 				SceneObjAux objAux;
-				objAux.objectId = obj["objectId"];
 				objAux.objFilePath = obj["objFilePath"];
 				objAux.x = obj["positionX"];
 				objAux.y = obj["positionY"];
@@ -77,6 +76,8 @@ private:
 						objAux.curvePoints.push_back(glm::vec3(x, y, z));
 					}
 				}
+				if (obj.contains("transfObjectId"))
+					objAux.transfObjectId = obj["transfObjectId"];
 				if(obj.contains("curveEnable"))
 						objAux.curveEnable = obj["curveEnable"];
 				if (obj.contains("scale"))
@@ -166,7 +167,7 @@ private:
 		for (const auto& obj : sceneObjectsAux)
 		{
 			float scaleObj = obj.scale > 0 ? obj.scale : 1.0;
-			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.objectId, obj.curvePoints, obj.curveEnable,
+			SceneObj sceneObj = SceneObj(obj.x, obj.y, obj.z, obj.objFilePath, shader, obj.transfObjectId, obj.curvePoints, obj.curveEnable,
 				glm::vec3(scaleObj, scaleObj, scaleObj), obj.rotate, obj.rotateSpeed);
 			sceneObject.push_back(sceneObj);
 		}

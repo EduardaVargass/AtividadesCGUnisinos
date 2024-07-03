@@ -138,7 +138,7 @@ void setSelectedObject(int id) {
 		selectedObject = nullptr;
 	else {
 		for (int i = 0; i < gScene->sceneObject.size(); ++i)
-			if (gScene->sceneObject[i].objectId == id) {
+			if (gScene->sceneObject[i].transfObjectId == id) {
 				selectedObject = &gScene->sceneObject[i];
 				break;
 			}
@@ -279,7 +279,7 @@ int main()
 			else if (scene.sceneObject[i].rotate == "z")
 				scene.sceneObject[i].rotateZ();
 
-			if (selectedObject != nullptr && selectedObject->objectId >= 0 && selectedObject->objectId == scene.sceneObject[i].objectId) {
+			if (selectedObject != nullptr && selectedObject->transfObjectId >= 0 && selectedObject->transfObjectId == scene.sceneObject[i].transfObjectId) {
 
 				if (!scene.sceneObject[i].playCurve || scene.sceneObject[i].nbCurve <= 0) {
 					if (translateX)

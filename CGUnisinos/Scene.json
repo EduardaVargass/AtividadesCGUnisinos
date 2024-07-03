@@ -23,34 +23,47 @@
     },
     "objects": [
         {
-            "objectId": 1,
             "objFilePath": "../Objetos/Mario/Solo/Solo.obj",
             "positionX": 0.0,
             "positionY": -3.2,
-            "positionZ": 0.0
+            "positionZ": 0.0,
+            "scale": 0.5
         },
         {
-            "objectId": 2,
             "objFilePath": "../Objetos/Mario/Grama/Grama.obj",
             "positionX": 0.0,
-            "positionY": -1.5,
-            "positionZ": 0.0
+            "positionY": -1.7,
+            "positionZ": 0.0,
+            "scale": 0.5
         },
         {
-            "objectId": 3,
             "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
             "positionX": 0.0,
-            "positionY": 1.0,
-            "positionZ": 0.0,
+            "positionY": -1.0,
+            "positionZ": -1.0,
             "scale": 0.15
         },
         {
-            "objectId": 4,
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": 0.3,
+            "positionY": -1.0,
+            "positionZ": -1.0,
+            "scale": 0.15
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": 0.6,
+            "positionY": -1.0,
+            "positionZ": -1.0,
+            "scale": 0.15
+        },
+        {
+            "transfObjectId": 4,
             "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
             "positionX": 0.0,
-            "positionY": 0,
-            "positionZ": 0.0,
-            "scale": 0.03,
+            "positionY": -0.5,
+            "positionZ": -1.0,
+            "scale": 0.02,
             "rotate": "x",
             "rotateSpeed": 100
         }
