@@ -1,6 +1,6 @@
 # Blender 4.1.1
 # www.blender.org
-mtllib Cogumelo.mtl
+mtllib ../Objetos/Mario/Cogumelo/Cogumelo.mtl
 o Sphere001
 v 0.000000 2.536762 -0.000000
 v 0.000000 2.512360 -0.247764

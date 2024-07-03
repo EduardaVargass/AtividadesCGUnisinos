@@ -23,99 +23,11 @@
     },
     "objects": [
         {
-            "objFilePath": "../Objetos/Mario/Solo/SoloQuadrado.obj",
-            "positionX": -1.35,
-            "positionY": -3,
-            "positionZ": 0.0,
-            "scale": 0.5
-        },
-        {
-            "objFilePath": "../Objetos/Mario/Solo/SoloRetanguloAlto.obj",
-            "positionX": 1.65,
-            "positionY": -2.75,
-            "positionZ": -0.75,
-            "scale": 0.5
-        },
-        {
-            "objFilePath": "../Objetos/Mario/Solo/SoloRetanguloBaixo.obj",
-            "positionX": 1.9,
-            "positionY": -3,
-            "positionZ": 0.55,
-            "scale": 0.4
-        },
-
-
-
-
-        {
-            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
-            "positionX": 0.6,
-            "positionY": -1.0,
-            "positionZ": -0.75,
-            "scale": 0.15
-        },
-        {
-            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
-            "positionX": 0.9,
-            "positionY": -1.0,
-            "positionZ": -0.75,
-            "scale": 0.15
-        },
-        {
-            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
-            "positionX": 1.2,
-            "positionY": -1.0,
-            "positionZ": -0.75,
-            "scale": 0.15
-        },
-        {
-            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
-            "positionX": 1.5,
-            "positionY": -1.0,
-            "positionZ": -0.75,
-            "scale": 0.15
-        },
-
-
-        {
             "transfObjectId": 4,
-            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
-            "positionX": 0.6,
-            "positionY": -0.5,
-            "positionZ": -0.7,
-            "scale": 0.02,
-            "rotate": "y",
-            "rotateSpeed": 100
-        },
-        {
-            "transfObjectId": 4,
-            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
-            "positionX": 0.9,
-            "positionY": -0.5,
-            "positionZ": -0.7,
-            "scale": 0.02,
-            "rotate": "y",
-            "rotateSpeed": 100
-        },
-        {
-            "transfObjectId": 4,
-            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
-            "positionX": 1.2,
-            "positionY": -0.5,
-            "positionZ": -0.7,
-            "scale": 0.02,
-            "rotate": "y",
-            "rotateSpeed": 100
-        },
-        {
-            "transfObjectId": 4,
-            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
+            "objFilePath": "../Objetos/Mario/Tunel/Tunel.obj",
             "positionX": 1.5,
             "positionY": -0.5,
-            "positionZ": -0.7,
-            "scale": 0.02,
-            "rotate": "y",
-            "rotateSpeed": 100
+            "positionZ": -0.7
         }
     ]
 }
