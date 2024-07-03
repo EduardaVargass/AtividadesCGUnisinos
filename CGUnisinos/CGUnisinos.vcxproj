@@ -148,7 +148,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneObj.cpp" />
     <ClCompile Include="SceneObjInfo.cpp" />
-    <ClCompile Include="TextureObj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\include\stb_image.h" />

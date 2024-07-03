@@ -42,9 +42,6 @@
     <ClCompile Include="SceneObjInfo.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="TextureObj.cpp">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\dependencies\GLAD\include\glad\glad.h">
