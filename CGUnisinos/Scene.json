@@ -14,20 +14,208 @@
         "upDirectionZ": 0.0
     },
     "light": {
-        "lightPositionX": 0.6,
-        "lightPositionY": -0.45,
-        "lightPositionZ": -0.75,
+        "lightPositionX": 0.75,
+        "lightPositionY": -1.2,
+        "lightPositionZ": 1.2,
         "lightColorR": 1.0,
         "lightColorG": 1.0,
         "lightColorB": 1.0
     },
     "objects": [
         {
-            "transfObjectId": 4,
+            "objFilePath": "../Objetos/Mario/Solo/SoloRetanguloBaixo.obj",
+            "positionX": 0,
+            "positionY": -2.75,
+            "positionZ": 0.5,
+            "scale": 1.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Nuvem/Nuvem.obj",
+            "positionX": 0,
+            "positionY": 2.5,
+            "positionZ": 0.5,
+            "scale": 0.1,
+            "curvePoints": [
+                ["0.0", "2.5", "0.5"],
+                ["0.0", "2.75", "0.0"],
+                ["0.0", "3.0", "0.0"],
+                ["0.0", "3.25", "0.5"],
+                ["0.0", "3.0", "1.0"],
+                ["0.0", "2.75", "1.0"],
+                ["0.0", "2.5", "0.5"]
+            ],
+            "curveEnable": true
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Nuvem/Nuvem.obj",
+            "positionX": 2.75,
+            "positionY": 2.5,
+            "positionZ": -1,
+            "scale": 0.2,
+            "curvePoints": [
+                ["2.75", "2.5", "-0.5"],
+                ["-2.5", "1.75", "-0.5"],
+                ["-2.75", "2.5", "-0.5"],
+                ["-2.75", "2.5", "-0.5"],
+                ["-2.5", "2.75", "-0.5"],
+                ["2.75", "2.5", "-0.5"],
+                ["2.75", "2.5", "-0.5"]
+            ],
+            "curveEnable": true
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Nuvem/Nuvem.obj",
+            "positionX": -2.25,
+            "positionY": 2,
+            "positionZ": -0.5,
+            "scale": 0.15,
+            "curvePoints": [
+                ["-2.25", "2.0", "-0.5"],
+                ["-2.5", "1.75", "-0.5"],
+                ["-2.75", "2.0", "-0.5"],
+                ["-2.75", "2.5", "-0.5"],
+                ["-2.5", "2.75", "-0.5"],
+                ["-2.25", "2.5", "-0.5"],
+                ["-2.25", "2.0", "-0.5"]
+            ],
+            "curveEnable": true
+        },
+        {
             "objFilePath": "../Objetos/Mario/Tunel/Tunel.obj",
-            "positionX": 1.5,
-            "positionY": -0.5,
-            "positionZ": -0.7
+            "positionX": 2.75,
+            "positionY": -1.75,
+            "positionZ": -0.25,
+            "scale": 0.85
+        },
+
+
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": 0.4,
+            "positionY": -0.2,
+            "positionZ": -0.75,
+            "scale": 0.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": 0.8,
+            "positionY": -0.2,
+            "positionZ": -0.75,
+            "scale": 0.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Pergunta/Pergunta.obj",
+            "positionX": 1.2,
+            "positionY": -0.2,
+            "positionZ": -0.75,
+            "scale": 0.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": 1.6,
+            "positionY": -0.2,
+            "positionZ": -0.75,
+            "scale": 0.2
+        },
+
+
+        {
+            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
+            "positionX": 0.4,
+            "positionY": 0.3,
+            "positionZ": -0.75,
+            "scale": 0.03,
+            "rotate": "y",
+            "rotateSpeed": 100
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
+            "positionX": 0.8,
+            "positionY": 0.3,
+            "positionZ": -0.75,
+            "scale": 0.03,
+            "rotate": "y",
+            "rotateSpeed": 100
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
+            "positionX": 1.2,
+            "positionY": 0.3,
+            "positionZ": -0.75,
+            "scale": 0.03,
+            "rotate": "y",
+            "rotateSpeed": 100
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Moeda/Moeda.obj",
+            "positionX": 1.6,
+            "positionY": 0.3,
+            "positionZ": -0.75,
+            "scale": 0.03,
+            "rotate": "y",
+            "rotateSpeed": 100
+        },
+
+        {
+            "transfObjectId": 1,
+            "objFilePath": "../Objetos/Mario/MarioLuigi/MarioLuigi.obj",
+            "positionX": 0.75,
+            "positionY": -1.75,
+            "positionZ": 1.2,
+            "scale": 0.02,
+            "curvePoints": [
+                ["3.0", "0.0", "0.0"],
+                ["2.866", "0.5", "0.0"],
+                ["2.5", "0.866", "0.0"],
+                ["2.0", "1.0", "0.0"],
+                ["1.5", "0.866", "0.0"],
+                ["1.134", "0.5", "0.0"],
+                ["1.0", "0.0", "0.0"],
+                ["1.134", "-0.5", "0.0"],
+                ["1.5", "-0.866", "0.0"],
+                ["2.0", "-1.0", "0.0"],
+                ["2.5", "-0.866", "0.0"],
+                ["2.866", "-0.5", "0.0"],
+                ["3.0", "0.0", "0.0"]
+            ],
+            "curveEnable": false
+        },
+
+        {
+            "objFilePath": "../Objetos/Mario/Pergunta/Pergunta.obj",
+            "positionX": -2.8,
+            "positionY": -0.2,
+            "positionZ": 1,
+            "scale": 0.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": -2.4,
+            "positionY": -0.2,
+            "positionZ": 1,
+            "scale": 0.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": -2.0,
+            "positionY": -0.2,
+            "positionZ": 1,
+            "scale": 0.2
+        },
+        {
+            "objFilePath": "../Objetos/Mario/Tijolo/Tijolo.obj",
+            "positionX": -1.6,
+            "positionY": -0.2,
+            "positionZ": 1,
+            "scale": 0.2
+        },
+        {
+            "transfObjectId": 2,
+            "objFilePath": "../Objetos/Mario/Cogumelo/Cogumelo.obj",
+            "positionX": -2.4,
+            "positionY": 0,
+            "positionZ": 1,
+            "scale": 0.15
         }
     ]
 }
